@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "0.12"
+
+before_script:
+  - npm install -g mocha
+  - npm install mockery
+
+deploy:
+  provider: npm
+  email: "kristopher.l.alexander@gmail.com"
+  api_key: "YmluYXJ5YWxjaGVtaXN0OmJhcmRvY2slU1I3MQ=="
+  on:
+    tags: true
