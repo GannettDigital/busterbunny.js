@@ -6,9 +6,20 @@ module.exports = function() {
     var format = require('string-format');
     var amqp = require('amqplib/callback_api');
 
-    function EventBus(onReady) {
+    function EventBus(opts, onReady) {
         var bus = {};
+        var _opts = opts;
         var _connection;
+        var _onReady = onReady;
+
+        if (arguments.length == 1) {
+            _opts = {reconnectTimeout: 1000};
+            _onReady = opts;
+        }
+
+        if (typeof _onReady != 'function') {
+            throw new Error('onReady not defined for event bus')
+        }
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
         var url = format(
@@ -24,7 +35,7 @@ module.exports = function() {
         function connect() {
             amqp.connect(url, function (err, conn) {
                 if (err) {
-                    setTimeout(1000, connect);
+                    setTimeout(opts.reconnectTimeout, connect);
                 }
                 _connection = conn;
                 onReady(bus);
