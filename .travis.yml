@@ -4,7 +4,12 @@ node_js:
 
 before_script:
   - npm install -g mocha
+  - npm install -g istanbul
+  - npm install coveralls
   - npm install mockery
+
+after_script:
+  - npm run coveralls
 
 deploy:
   provider: npm
