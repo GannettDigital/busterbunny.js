@@ -1,2 +1,2 @@
 # busterbunny.js
-Opinionated Library for RabbitMQ/amqplib
+Opinionated EventBus Library for RabbitMQ/amqplib
