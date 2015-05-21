@@ -33,3 +33,51 @@ Code Coverage provided by Instanbul with hooks for coveralls.  To see coverage r
 ```
 npm run cover
 ```
+
+Usage
+--------------
+
+```node
+var BusterBunny = require('busterbunny');
+
+var config = {
+    amqp: {
+        cluster: {
+            host: 'host.host.it',
+            port: 5672,
+            vhost: '/',
+            login: 'someguy',
+            password: '2insecure',
+            heartbeat: 10
+        },
+        queues: [
+            {
+                name: 'i.read.from.this1'
+            },
+            {
+                name: 'i.read.from.this2'
+            }
+        ],
+        exchange: 'i.write.2.this1'
+    }
+};
+
+function onBusterBunnyReady(bb) {
+    //do something with bb
+    //for example log initial stats
+    console.log(JSON.stringify(bb.getStats()));
+}
+
+//init buster bunny
+var busterBunny = new BusterBunny(config, onBusterBunnyReady);
+
+//raise event against bus
+//this will be done when connection and channel is available
+busterBunny.raiseEvents('kicked.bucket.1001', { data: { count : 9001 } });
+
+//subscribe to events from bus
+//this will be done when connection and channel is available
+busterBunny.onNextEvent(function(event) {
+    console.log("I found a " +  event.type + " event!");
+});
+```

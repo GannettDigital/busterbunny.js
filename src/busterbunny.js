@@ -13,7 +13,7 @@ module.exports = function() {
         var _eventPublishQueue = [];
         var _eventSubscribers = [];
         var _channel;
-        var _stats = { queuedEventsToRaise : 0, subscribers : 0, reconnects: 0, errors: 0 };
+        var _stats = { queuedEventsToRaise : 0, subscribers : 0, reconnects: 0 };
 
         const READY_EVENT = 'ready',
             CONNECTED_EVENT  = 'connected',
@@ -72,7 +72,10 @@ module.exports = function() {
         };
 
         function publishOrQueue(exchange, eventId, eventData, options, afterRaised) {
-            _eventPublishQueue.push([exchange, eventId, eventData, options, afterRaised]);
+            var args = [exchange, eventId, eventData];
+            if (options) args.push(options);
+            if (afterRaised) args.push(afterRaised);
+            _eventPublishQueue.push(args);
             self.emit(PUBLISH_REQUESTED_EVENT);
         }
 
@@ -92,7 +95,7 @@ module.exports = function() {
         function connect() {
             amqp.connect(url, function (err, conn) {
                 if (err) {
-                    connect();
+                    reconnect();
                 }
 
                 _connection = conn;
