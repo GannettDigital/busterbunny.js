@@ -1,3 +1,3 @@
 module.exports = {
-    EventBus : require('./src/EventBus')
+    BusterBunny : require('./src/busterbunny.js')
 };
