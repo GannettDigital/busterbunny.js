@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function() {
     var EventEmitter = require('events').EventEmitter;
     var format = require('string-format');
