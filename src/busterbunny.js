@@ -1,7 +1,5 @@
-module.exports = function() {
+module.exports = (function() {
     var EventEmitter = require('events').EventEmitter;
-    var format = require('string-format');
-    var amqp = require('amqplib/callback_api');
 
     function BusterBunny(config, onReady) {
         var self = this;
@@ -12,13 +10,18 @@ module.exports = function() {
         var _eventSubscribers = [];
         var _channel;
         var _stats = { queuedEventsToRaise : 0, subscribers : 0, reconnects: 0 };
+        var _amqp = require('amqplib/callback_api');
+        var format = require('string-format');
 
         const READY_EVENT = 'ready',
+            CONNECTING_EVENT = 'connecting',
+            RECONNECTING_EVENT = 'reconnecting',
             CONNECTED_EVENT  = 'connected',
             ERROR_EVENT = 'error',
             PUBLISH_CHANNEL_ESTABLISHED_EVENT = 'publish-channel-established',
             PUBLISH_REQUESTED_EVENT = 'publish-requested',
             EVENT_RECEIVED_EVENT = 'event-received';
+
 
         if (typeof _onReady != 'function') {
             throw new Error('onReady not defined for event bus');
@@ -91,15 +94,12 @@ module.exports = function() {
         }
 
         function connect() {
-            amqp.connect(url, function (err, conn) {
+            _amqp.connect(url, function (err, conn) {
                 if (err) {
-                    reconnect();
+                    self.emit(RECONNECTING_EVENT);
                 }
 
-                _connection = conn;
-                _connection.on(ERROR_EVENT, reconnect);
-                _connected = true;
-                self.emit(CONNECTED_EVENT);
+                self.emit(CONNECTING_EVENT, conn);
             });
         }
 
@@ -157,6 +157,20 @@ module.exports = function() {
             });
         });
 
+        self.on(CONNECTING_EVENT, function(conn) {
+            _connection = conn;
+            _connection.on(ERROR_EVENT, function() {
+                self.emit(RECONNECTING_EVENT);
+            });
+
+            _connected = true;
+            self.emit(CONNECTED_EVENT);
+        });
+
+        self.on(RECONNECTING_EVENT, function(){
+            reconnect();
+        });
+
         self.on(CONNECTED_EVENT, function() {
             createPublisherChannel();
 
@@ -168,7 +182,7 @@ module.exports = function() {
         });
 
         self.on(READY_EVENT, function() {
-            onReady(self);
+            _onReady(self);
         });
 
         self.on(PUBLISH_CHANNEL_ESTABLISHED_EVENT, publishQueuedRequestsRecursively);
@@ -180,4 +194,4 @@ module.exports = function() {
     BusterBunny.prototype = new EventEmitter();
 
     return BusterBunny;
-};
+})();
