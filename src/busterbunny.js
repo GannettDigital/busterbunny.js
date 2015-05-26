@@ -143,11 +143,13 @@ module.exports = (function() {
                     channel.consume(queue.name, function (message) {
                         try {
                             var event = self.encoder.decodeEvent(message);
-                            message.reject = function (requeue) {
+
+                            var messageObj = {};
+                            messageObj.reject = function (requeue) {
                                 channel.nack(message, false, requeue);
                             };
 
-                            message.acknowledge = function () {
+                            messageObj.acknowledge = function () {
                                 channel.ack(message, false)
                             };
 

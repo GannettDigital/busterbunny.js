@@ -21,8 +21,6 @@ describe("busterbunny.js", function() {
         exchange: 'i.write.2.this1'
     };
 
-    var BusterBunny = require('../../src/busterbunny.js');
-
     before(function() {
         mockery.enable({ useCleanCache: true });
     });
@@ -152,6 +150,7 @@ describe("busterbunny.js", function() {
         });
     });
 
+    //TODO: Figure out why these tests is sending the same message multiple times
     it('should receive event when received event triggered', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
@@ -161,11 +160,55 @@ describe("busterbunny.js", function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
-        bb.subscribe(function (event, message) {
-            assert.ok(true);
+        var n = 0;
+
+        bb.on('done', function() {
             done();
         });
 
+        bb.subscribe(function() {
+            assert.ok(true);
+            n++;
+            console.log('called ' + n + ' times')
+            bb.emit('done');
+        });
+
         bb.emit('event-received', {}, {});
+    });
+
+    it('should receive event when sent from amqplib', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message);
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.once('done', function() {
+            done();
+        });
+
+        bb.subscribe(function (event, message) {
+            assert.ok(true);
+            bb.emit('done');
+        });
     });
 });

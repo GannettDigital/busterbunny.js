@@ -2,18 +2,19 @@ module.exports = (function() {
     var EventEmitter = require('events').EventEmitter;
 
     function AmqpMock() {
-        this.connection = new EventEmitter();
-        this.connection.createChannel = function() {};
+        var mock = this;
+        mock.connection = new EventEmitter();
+        mock.connection.createChannel = function() {};
 
-        this.connect = function(url, connectionCallback) {
-            connectionCallback(null, this.connection);
+        mock.connect = function(url, connectionCallback) {
+            connectionCallback(null, mock.connection);
         };
 
-        this.causeConnectionError = function() {
-            this.connection.emit('error', {});
+        mock.causeConnectionError = function() {
+            mock.connection.emit('error', {});
         };
 
-        return this;
+        return mock;
     }
 
     AmqpMock.prototype = new EventEmitter();
