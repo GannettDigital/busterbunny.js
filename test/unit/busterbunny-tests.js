@@ -162,7 +162,7 @@ describe("busterbunny.js", function() {
 
         var n = 0;
 
-        bb.on('done', function() {
+        bb.once('done', function() {
             done();
         });
 
