@@ -62,14 +62,8 @@ var config = {
     }
 };
 
-function onBusterBunnyReady(bb) {
-    //do something with bb
-    //for example log initial stats
-    console.log(JSON.stringify(bb.getStats()));
-}
-
 //init buster bunny
-var busterBunny = new BusterBunny(config, onBusterBunnyReady);
+var busterBunny = new BusterBunny(config);
 
 //raise event against bus
 //this will be done when connection and channel is available
