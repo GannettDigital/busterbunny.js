@@ -20,6 +20,7 @@ describe("busterbunny.js", function() {
         ],
         exchange: 'i.write.2.this1'
     };
+
     var BusterBunny = require('../../src/busterbunny.js');
 
     before(function() {
@@ -30,22 +31,6 @@ describe("busterbunny.js", function() {
         mockery.deregisterAll();
     });
 
-    it('should callback when ready', function(done) {
-        var AmqpMock = require('./mock-amqp.js');
-        var amqpMock = new AmqpMock();
-
-        mockery.registerMock('amqplib/callback_api', amqpMock);
-
-        try {
-            var bb = new BusterBunny(fakeConfig, function () {
-                assert.ok(true);
-                done();
-            });
-        } catch (err) {
-            assert.fail(true, err);
-        }
-    });
-
     it('should attempt reconnect on failure', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
@@ -54,7 +39,7 @@ describe("busterbunny.js", function() {
 
         var BusterBunny = require('../../src/busterbunny.js');
 
-        var bb = new BusterBunny(fakeConfig, function () {});
+        var bb = new BusterBunny(fakeConfig);
 
         bb.on('reconnecting', function() {
             assert.ok(true);
@@ -62,5 +47,125 @@ describe("busterbunny.js", function() {
         });
 
         amqpMock.causeConnectionError();
+    });
+
+    it('should raiseEvents on open connection', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {
+                publish: function () {
+                    assert.ok(true);
+                    done();
+                }
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.raiseEvents('eventId', {}, {}, function() {});
+    });
+
+    it('should raiseEvents on open connection with no options and no callback', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {
+                publish: function () {
+                    assert.ok(true);
+                    done();
+                }
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.raiseEvents('eventId', {});
+    });
+
+    it('should call after raised when calling raiseEvents on open connection with options and callback', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {
+                publish: function () {
+                }
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.raiseEvents('eventId', {}, {}, function(err) {
+            if (err)
+                assert.fail(true, err);
+            else
+                assert.ok(true);
+
+            done();
+        });
+    });
+
+    it('should callback with failure after publish error thrown by amqplib', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {
+                publish: function () {
+                    throw new Error('EVIL!!!!');
+                }
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.raiseEvents('eventId', {}, {}, function(err) {
+            if (err)
+                assert.ok(true, err);
+            else
+                assert.fail(true);
+
+            done();
+        });
+    });
+
+    it('should receive event when received event triggered', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.subscribe(function (event, message) {
+            assert.ok(true);
+            done();
+        });
+
+        bb.emit('event-received', {}, {});
     });
 });

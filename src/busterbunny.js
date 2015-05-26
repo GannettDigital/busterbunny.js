@@ -1,10 +1,9 @@
 module.exports = (function() {
     var EventEmitter = require('events').EventEmitter;
 
-    function BusterBunny(config, onReady) {
+    function BusterBunny(config) {
         var self = this;
         var _connection;
-        var _onReady = onReady;
         var _connected = false;
         var _eventPublishQueue = [];
         var _eventSubscribers = [];
@@ -21,11 +20,6 @@ module.exports = (function() {
             PUBLISH_CHANNEL_ESTABLISHED_EVENT = 'publish-channel-established',
             PUBLISH_REQUESTED_EVENT = 'publish-requested',
             EVENT_RECEIVED_EVENT = 'event-received';
-
-
-        if (typeof _onReady != 'function') {
-            throw new Error('onReady not defined for event bus');
-        }
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
         var url = format(
@@ -82,13 +76,28 @@ module.exports = (function() {
 
         function publishQueuedRequestsRecursively() {
             if (!_connected || !_channel) return;
+
             var args = _eventPublishQueue.pop();
 
+            if (!args) return;
+
             //the last arg is a method for after invoking publish
-            var afterRaised = args.splice(args.length-1, 1)[0];
-            _channel.publish.apply(_channel, args);
-            _stats.queuedEventsToRaise--;
-            afterRaised();
+            var afterRaised;
+            var error;
+
+            if (args.length == 5)
+                afterRaised = args.splice(args.length-1, 1)[0];
+
+            try {
+                _channel.publish.apply(_channel, args);
+                _stats.queuedEventsToRaise--;
+            } catch (err) {
+                var eventId = args[1];
+                error = new Error('Event ' + eventId + ' failed to publish due to error: ' + err);
+            }
+
+            if (afterRaised)
+                afterRaised(error);
 
             publishQueuedRequestsRecursively();
         }
@@ -181,14 +190,12 @@ module.exports = (function() {
             self.emit(READY_EVENT);
         });
 
-        self.on(READY_EVENT, function() {
-            _onReady(self);
-        });
-
         self.on(PUBLISH_CHANNEL_ESTABLISHED_EVENT, publishQueuedRequestsRecursively);
         self.on(PUBLISH_REQUESTED_EVENT, publishQueuedRequestsRecursively);
 
         connect();
+
+        return self;
     }
 
     BusterBunny.prototype = new EventEmitter();
