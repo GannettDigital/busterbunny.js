@@ -96,19 +96,19 @@ busterBunny.on(busterBunny.EVENTS.WARNING_RAISED, function(msg) {
 
 The current list of events are ...
 
-WARNING_RAISED when a warning (like when a threshold is reached) has been reached
-READY when buster bunny has successfully established or re-established a connection and channels are available
-CONNECTING when buster bunny is establishing connections
-RECONNECTING after a connection has been lost but before it has been reconnected
-CONNECTED after a connection has been established
-AMQP_ERROR when the amqplib throws an error
-PUBLISH_CHANNEL_ESTABLISHED when buster bunny is ready to publish events to an exchange
-PUBLISH_REQUESTED when an event has been raised with buster bunny
-EVENT_RECEIVED when buster bunny has received an event from amqp
+0. WARNING_RAISED when a warning (like when a threshold is reached) has been reached
+0. READY when buster bunny has successfully established or re-established a connection and channels are available
+0. CONNECTING when buster bunny is establishing connections
+0. RECONNECTING after a connection has been lost but before it has been reconnected
+0. CONNECTED after a connection has been established
+0. AMQP_ERROR when the amqplib throws an error
+0. PUBLISH_CHANNEL_ESTABLISHED when buster bunny is ready to publish events to an exchange
+0. PUBLISH_REQUESTED when an event has been raised with buster bunny
+0. EVENT_RECEIVED when buster bunny has received an event from amqp
 
 Some Opinions To Be Aware Of
 ----------------------------
-The library tries to ALWAYS be connected to amqp over one connection with 1 channel for publishing and 1 for consuming.
-The library also WARNS BUT DOENS'T REJECT when thresholds are hit allowing applications to handle the warning gracefully.
-The library doesn't enforce the format of event messages.
-The library does want all events to at least have an identifier and data.
+* The library tries to ALWAYS be connected to amqp over one connection with 1 channel for publishing and 1 for consuming.
+* The library also WARNS BUT DOENS'T REJECT when thresholds are hit allowing applications to handle the warning gracefully.
+* The library doesn't enforce the format of event messages.
+* The library does want all events to at least have an identifier and data.
