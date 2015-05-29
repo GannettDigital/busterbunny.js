@@ -1,7 +1,7 @@
 {
   "name": "busterbunny",
   "version": "0.0.2",
-  "description" : "Opinionated EventBus Library for RabbitMQ/amqplib",
+  "description" : "Opinionated EventBus Library for amqplib",
   "license": "MIT",
   "repository": {
     "type": "git",
