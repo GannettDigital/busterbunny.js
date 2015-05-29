@@ -1,4 +1,5 @@
 module.exports = (function() {
+    var util = require('util');
     var EventEmitter = require('events').EventEmitter;
 
     function AmqpMock() {
@@ -11,13 +12,13 @@ module.exports = (function() {
         };
 
         mock.causeConnectionError = function() {
-            mock.connection.emit('error', {});
+            mock.connection.emit('amqp-error', {});
         };
 
         return mock;
     }
 
-    AmqpMock.prototype = new EventEmitter();
+    util.inherits(AmqpMock, EventEmitter);
 
     return AmqpMock;
 })();

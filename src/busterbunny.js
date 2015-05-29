@@ -1,5 +1,8 @@
 module.exports = (function() {
     var EventEmitter = require('events').EventEmitter;
+    var merge = require('merge');
+    var util = require('util');
+    var format = require('string-format');
 
     function BusterBunny(config) {
         var self = this;
@@ -7,22 +10,28 @@ module.exports = (function() {
         var _connected = false;
         var _eventPublishQueue = [];
         var _eventSubscribers = [];
-        var _channel;
+        var _publishingChannel;
         var _stats = { queuedEventsToRaise : 0, subscribers : 0, reconnects: 0 };
         var _amqp = require('amqplib/callback_api');
-        var format = require('string-format');
+        var _thresholds = { maxRaisedEvents : 100000, maxConsumers : 1000 };
 
-        const READY_EVENT = 'ready',
-            CONNECTING_EVENT = 'connecting',
-            RECONNECTING_EVENT = 'reconnecting',
-            CONNECTED_EVENT  = 'connected',
-            ERROR_EVENT = 'error',
-            PUBLISH_CHANNEL_ESTABLISHED_EVENT = 'publish-channel-established',
-            PUBLISH_REQUESTED_EVENT = 'publish-requested',
-            EVENT_RECEIVED_EVENT = 'event-received';
+        if (config.thresholds)
+            merge(_thresholds, config.thresholds);
+
+        self.EVENTS = Object.freeze({
+            WARNING_RAISED: 'warning-raised',
+            READY: 'ready',
+            CONNECTING: 'connecting',
+            RECONNECTING: 'reconnecting',
+            CONNECTED: 'connected',
+            AMQP_ERROR: 'amqp-error',
+            PUBLISH_CHANNEL_ESTABLISHED: 'publish-channel-established',
+            PUBLISH_REQUESTED: 'publish-requested',
+            EVENT_RECEIVED: 'event-received'
+        });
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
-        var url = format(
+        var _url = format(
             'amqp://{0}:{1}@{2}:{3}/{4}?heartbeat={5}'
             , config.cluster.login
             , config.cluster.password
@@ -34,6 +43,10 @@ module.exports = (function() {
 
         self.getStats = function() {
             return _stats;
+        };
+
+        self.getUrl = function() {
+            return _url;
         };
 
         self.encoder = {
@@ -64,6 +77,10 @@ module.exports = (function() {
             if (_eventSubscribers.length == 1) {
                 createSubscriberChannel();
             }
+
+            if (_eventSubscribers.length >= _thresholds.maxConsumers) {
+                self.emit(self.EVENTS.WARNING_RAISED, _eventSubscribers.length + ' consumers is greater than or equal to max of ' + _thresholds.maxConsumers);
+            }
         };
 
         function publishOrQueue(exchange, eventId, eventData, options, afterRaised) {
@@ -71,11 +88,16 @@ module.exports = (function() {
             if (options) args.push(options);
             if (afterRaised) args.push(afterRaised);
             _eventPublishQueue.push(args);
-            self.emit(PUBLISH_REQUESTED_EVENT);
+
+            if (_eventPublishQueue.length >= _thresholds.maxRaisedEvents) {
+                self.emit(self.EVENTS.WARNING_RAISED, _eventPublishQueue.length + ' events queued is greater than or equal to max of ' + _thresholds.maxRaisedEvents);
+            }
+
+            self.emit(self.EVENTS.PUBLISH_REQUESTED);
         }
 
         function publishQueuedRequestsRecursively() {
-            if (!_connected || !_channel) return;
+            if (!_connected || !_publishingChannel) return;
 
             var args = _eventPublishQueue.pop();
 
@@ -89,7 +111,7 @@ module.exports = (function() {
                 afterRaised = args.splice(args.length-1, 1)[0];
 
             try {
-                _channel.publish.apply(_channel, args);
+                _publishingChannel.publish.apply(_publishingChannel, args);
                 _stats.queuedEventsToRaise--;
             } catch (err) {
                 var eventId = args[1];
@@ -103,12 +125,12 @@ module.exports = (function() {
         }
 
         function connect() {
-            _amqp.connect(url, function (err, conn) {
+            _amqp.connect(_url, function (err, conn) {
                 if (err) {
-                    self.emit(RECONNECTING_EVENT);
+                    self.emit(self.EVENTS.RECONNECTING);
                 }
 
-                self.emit(CONNECTING_EVENT, conn);
+                self.emit(self.EVENTS.CONNECTING, conn);
             });
         }
 
@@ -125,8 +147,8 @@ module.exports = (function() {
                     throw new Error('Unexpected error encountered: ' + err);
                 }
 
-                _channel = channel;
-                self.emit(PUBLISH_CHANNEL_ESTABLISHED_EVENT);
+                _publishingChannel = channel;
+                self.emit(self.EVENTS.PUBLISH_CHANNEL_ESTABLISHED);
             });
         }
 
@@ -153,7 +175,7 @@ module.exports = (function() {
                                 channel.ack(message, false)
                             };
 
-                            self.emit(EVENT_RECEIVED_EVENT, event, message);
+                            self.emit(self.EVENTS.EVENT_RECEIVED, event, message);
                         } catch (err) {
                             channel.nack(message, false, true);
                         }
@@ -162,45 +184,45 @@ module.exports = (function() {
             });
         }
 
-        self.on(EVENT_RECEIVED_EVENT, function(event, message) {
+        self.on(self.EVENTS.EVENT_RECEIVED, function(event, message) {
             _eventSubscribers.forEach(function(onNext) {
                 onNext(event, message);
             });
         });
 
-        self.on(CONNECTING_EVENT, function(conn) {
+        self.on(self.EVENTS.CONNECTING, function(conn) {
             _connection = conn;
-            _connection.on(ERROR_EVENT, function() {
-                self.emit(RECONNECTING_EVENT);
+            _connection.on(self.EVENTS.AMQP_ERROR, function() {
+                self.emit(self.EVENTS.RECONNECTING);
             });
 
             _connected = true;
-            self.emit(CONNECTED_EVENT);
+            self.emit(self.EVENTS.CONNECTED);
         });
 
-        self.on(RECONNECTING_EVENT, function(){
+        self.on(self.EVENTS.RECONNECTING, function(){
             reconnect();
         });
 
-        self.on(CONNECTED_EVENT, function() {
+        self.on(self.EVENTS.CONNECTED, function() {
             createPublisherChannel();
 
-            if (_eventSubscribers.length > 0) {
+            if (_eventSubscribers.length == 1) {
                 createSubscriberChannel();
             }
 
-            self.emit(READY_EVENT);
+            self.emit(self.EVENTS.READY);
         });
 
-        self.on(PUBLISH_CHANNEL_ESTABLISHED_EVENT, publishQueuedRequestsRecursively);
-        self.on(PUBLISH_REQUESTED_EVENT, publishQueuedRequestsRecursively);
+        self.on(self.EVENTS.PUBLISH_CHANNEL_ESTABLISHED, publishQueuedRequestsRecursively);
+        self.on(self.EVENTS.PUBLISH_REQUESTED, publishQueuedRequestsRecursively);
 
         connect();
 
         return self;
     }
 
-    BusterBunny.prototype = new EventEmitter();
+    util.inherits(BusterBunny, EventEmitter);
 
     return BusterBunny;
 })();
