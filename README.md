@@ -1,8 +1,10 @@
 # busterbunny.js
 
+Opinionated EventBus Library for amqplib
+
 [![npm](https://img.shields.io/npm/v/busterbunny.svg)](https://www.npmjs.com/package/busterbunny) [![Coverage Status](https://coveralls.io/repos/GannettDigital/busterbunny.js/badge.svg)](https://coveralls.io/r/GannettDigital/busterbunny.js) [![Build Status](https://travis-ci.org/GannettDigital/busterbunny.js.svg?branch=master)](https://travis-ci.org/GannettDigital/busterbunny.js)
 
-Opinionated EventBus Library for amqplib
+
 
 Installation
 ------------
@@ -75,3 +77,38 @@ busterBunny.onNextEvent(function(event) {
     console.log("I found a " +  event.type + " event!");
 });
 ```
+
+Events
+-------
+Buster Bunny is an event emitter so it allows you to hook into the object to do things such as logging.  
+Buster Bunny provides events as a frozen object within buster bunny.  
+
+For example if you wanted to log warnings coming out of busterbunny   
+
+```node
+//This assumes you have required everything and have a logger
+var busterBunny = new BusterBunny(config);
+
+busterBunny.on(busterBunny.EVENTS.WARNING_RAISED, function(msg) {
+    logger.warn(msg);
+});
+```
+
+The current list of events are ...
+
+WARNING_RAISED when a warning (like when a threshold is reached) has been reached
+READY when buster bunny has successfully established or re-established a connection and channels are available
+CONNECTING when buster bunny is establishing connections
+RECONNECTING after a connection has been lost but before it has been reconnected
+CONNECTED after a connection has been established
+AMQP_ERROR when the amqplib throws an error
+PUBLISH_CHANNEL_ESTABLISHED when buster bunny is ready to publish events to an exchange
+PUBLISH_REQUESTED when an event has been raised with buster bunny
+EVENT_RECEIVED when buster bunny has received an event from amqp
+
+Some Opinions To Be Aware Of
+----------------------------
+The library tries to ALWAYS be connected to amqp over one connection with 1 channel for publishing and 1 for consuming.
+The library also WARNS BUT DOENS'T REJECT when thresholds are hit allowing applications to handle the warning gracefully.
+The library doesn't enforce the format of event messages.
+The library does want all events to at least have an identifier and data.
