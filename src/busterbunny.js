@@ -166,13 +166,13 @@ module.exports = (function() {
                         try {
                             var event = self.encoder.decodeEvent(message);
 
-                            var messageObj = {};
-                            messageObj.reject = function (requeue) {
-                                channel.nack(message, false, requeue);
-                            };
-
-                            messageObj.acknowledge = function () {
-                                channel.ack(message, false)
+                            var messageObj = {
+                                reject: function (requeue) {
+                                    channel.nack(message, false, requeue);
+                                },
+                                acknowledge: function () {
+                                    channel.ack(message, false)
+                                }
                             };
 
                             self.emit(self.EVENTS.EVENT_RECEIVED, event, messageObj);
