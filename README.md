@@ -42,6 +42,7 @@ Usage
 ```node
 var BusterBunny = require('busterbunny');
 
+//example config
 var config = {
     amqp: {
         cluster: {
@@ -65,7 +66,7 @@ var config = {
 };
 
 //init buster bunny
-var busterBunny = new BusterBunny(config);
+var busterBunny = new BusterBunny(config.amqp);
 
 //raise event against bus
 //this will be done when connection and channel is available
