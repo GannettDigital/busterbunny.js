@@ -175,7 +175,7 @@ module.exports = (function() {
                                 channel.ack(message, false)
                             };
 
-                            self.emit(self.EVENTS.EVENT_RECEIVED, event, message);
+                            self.emit(self.EVENTS.EVENT_RECEIVED, event, messageObj);
                         } catch (err) {
                             channel.nack(message, false, true);
                         }

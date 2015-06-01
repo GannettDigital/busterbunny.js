@@ -275,6 +275,48 @@ describe("busterbunny.js", function() {
         });
     });
 
+    it('should receive event and valid messageObj', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.subscribe(function(event, messageObj) {
+            assert.equal(!event, false);
+            assert.equal(!messageObj, false);
+            assert.equal(!messageObj.acknowledge, false);
+            assert.equal(!messageObj.reject, false);
+            done();
+        });
+    });
+
     it('should create well formed amqp connection urls', function() {
         var AmqpMock = require('./mock-amqp.js');
         var format = require('string-format');
