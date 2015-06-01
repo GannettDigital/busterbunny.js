@@ -1,8 +1,9 @@
 {
   "name": "busterbunny",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description" : "Opinionated EventBus Library for amqplib",
   "license": "MIT",
+  "main" : "./src/busterbunny.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/GannettDigital/busterbunny.js.git"
