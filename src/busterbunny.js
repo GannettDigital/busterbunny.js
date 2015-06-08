@@ -27,7 +27,9 @@ module.exports = (function() {
             AMQP_ERROR: 'amqp-error',
             PUBLISH_CHANNEL_ESTABLISHED: 'publish-channel-established',
             PUBLISH_REQUESTED: 'publish-requested',
-            EVENT_RECEIVED: 'event-received'
+            EVENT_RECEIVED: 'event-received',
+            EVENT_ACKED: 'event-acknowledged',
+            EVENT_NACKED: 'event-nacked'
         });
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
@@ -169,15 +171,19 @@ module.exports = (function() {
                             var messageObj = {
                                 reject: function (requeue) {
                                     channel.nack(message, false, requeue);
+                                    self.emit(self.EVENTS.EVENT_NACKED, message, requeue, new Date().getTime());
+
                                 },
                                 acknowledge: function () {
                                     channel.ack(message, false)
+                                    self.emit(self.EVENTS.EVENT_ACKED, message, new Date().getTime());
                                 }
                             };
 
                             self.emit(self.EVENTS.EVENT_RECEIVED, event, messageObj);
                         } catch (err) {
                             channel.nack(message, false, true);
+                            self.emit(self.EVENTS.EVENT_NACKED, message, false, new Date().getTime());
                         }
                     });
                 });

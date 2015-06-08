@@ -22,11 +22,155 @@ describe("busterbunny.js", function() {
     };
 
     before(function() {
-        mockery.enable({ useCleanCache: true });
+        mockery.enable({
+            useCleanCache: true,
+            warnOnUnregistered: false
+        });
     });
 
     afterEach(function() {
         mockery.deregisterAll();
+    });
+
+    it('should emit event when message is acked', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.ack = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.on(bb.EVENTS.EVENT_ACKED, function(message, timestamp){
+            assert.equal(!message, false);
+            assert(typeof timestamp == 'number');
+            done();
+        });
+
+        bb.subscribe(function(event, messageObj) {
+            messageObj.acknowledge();
+        });
+    });
+
+    it('should emit event with true when message rejected with requeue', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {
+            };
+            channel.nack = function() {
+            };
+            channel.consume = function(name, callback) {
+                var message = {
+                    content: {
+                        toString: function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.on(bb.EVENTS.EVENT_NACKED, function(message, requeue, timestamp) {
+            assert.equal(!message, false);
+            assert(typeof requeue == 'boolean');
+            assert.equal(requeue, true);
+            assert(typeof timestamp == 'number');
+            done();
+        });
+
+        bb.subscribe(function(event, messageObj) {
+            messageObj.reject(true);
+        });
+    });
+
+    it('should emit event with false when message rejected without requeue', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {
+            };
+            channel.nack = function() {
+            };
+            channel.consume = function(name, callback) {
+                var message = {
+                    content: {
+                        toString: function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.on(bb.EVENTS.EVENT_NACKED, function(message, requeue, timestamp) {
+            assert.equal(!message, false);
+            assert(typeof requeue == 'boolean');
+            assert.equal(requeue, false);
+            assert(typeof timestamp == 'number');
+            done();
+        });
+
+        bb.subscribe(function(event, messageObj) {
+            messageObj.reject(false);
+        });
     });
 
     it('should attempt reconnect on failure', function(done) {
