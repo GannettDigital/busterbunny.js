@@ -68,7 +68,7 @@ describe("busterbunny.js", function() {
 
         bb.on(bb.EVENTS.EVENT_ACKED, function(message, timestamp){
             assert.equal(!message, false);
-            assert(typeof timestamp == 'number');
+            assert(typeof timestamp === 'number');
             done();
         });
 
@@ -114,9 +114,9 @@ describe("busterbunny.js", function() {
 
         bb.on(bb.EVENTS.EVENT_NACKED, function(message, requeue, timestamp) {
             assert.equal(!message, false);
-            assert(typeof requeue == 'boolean');
+            assert(typeof requeue === 'boolean');
             assert.equal(requeue, true);
-            assert(typeof timestamp == 'number');
+            assert(typeof timestamp === 'number');
             done();
         });
 
@@ -162,9 +162,9 @@ describe("busterbunny.js", function() {
 
         bb.on(bb.EVENTS.EVENT_NACKED, function(message, requeue, timestamp) {
             assert.equal(!message, false);
-            assert(typeof requeue == 'boolean');
+            assert(typeof requeue === 'boolean');
             assert.equal(requeue, false);
-            assert(typeof timestamp == 'number');
+            assert(typeof timestamp === 'number');
             done();
         });
 
