@@ -32,6 +32,135 @@ describe("busterbunny.js", function() {
         mockery.deregisterAll();
     });
 
+    it('should update the messagesRejectedWithRetry stat when message is rejected with requeue', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.nack = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        assert.equal(bb.getStats().messagesRejectedWithRetry, 0);
+        bb.subscribe(function(event, messageObj) {
+            messageObj.reject(true);
+
+            assert.equal(bb.getStats().messagesRejectedWithRetry, 1);
+            done();
+        });
+    });
+
+    it('should update the messagesRejected stat when message is rejected without requeue', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.nack = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        assert.equal(bb.getStats().messagesRejected, 0);
+        bb.subscribe(function(event, messageObj) {
+            messageObj.reject(false);
+
+            assert.equal(bb.getStats().messagesRejected, 1);
+            done();
+        });
+    });
+
+    it('should update the messagesAcknowledged stat when message is acked', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.ack = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.queues = [
+            {
+                name: 'i.read.from.this1'
+            }
+        ];
+
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        assert.equal(bb.getStats().messagesAcknowledged, 0);
+        bb.subscribe(function(event, messageObj) {
+            messageObj.acknowledge();
+
+            assert.equal(bb.getStats().messagesAcknowledged, 1);
+            done();
+        });
+    });
+
     it('should emit event when message is acked', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
