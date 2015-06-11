@@ -129,7 +129,6 @@ module.exports = (function() {
                 if(err) {
                     self.emit(self.EVENTS.RECONNECTING);
                 } else {
-
                     self.emit(self.EVENTS.CONNECTING, conn);
                 }
             });
