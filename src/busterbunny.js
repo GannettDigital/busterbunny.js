@@ -179,7 +179,7 @@ module.exports = (function() {
                             var messageObj = {
                                 reject: function (requeue) {
                                     channel.nack(message, false, requeue);
-                                    if(requeue && requeue === true){
+                                    if(requeue === true){
                                         _stats.messagesRejectedWithRetry++;
                                     } else {
                                         _stats.messagesRejected++;
