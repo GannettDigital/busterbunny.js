@@ -415,7 +415,7 @@ describe("busterbunny.js", function() {
         connectWithError(new Error('whatever'));
     });
 
-    it('should not emit a CONNECTING event when _amqp.connect calls back with an error', function(done) {
+    it('should emit a CONNECTING event when _amqp.connect calls back without an error', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
@@ -442,7 +442,7 @@ describe("busterbunny.js", function() {
         connectWithoutError(null, {});
     });
 
-    it('should not emit a RECONNECTING event but not a CONNECTING event when _amqp.connect calls back with an error', function(done) {
+    it('should emit a RECONNECTING event but not a CONNECTING event when _amqp.connect calls back with an error', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
@@ -481,7 +481,7 @@ describe("busterbunny.js", function() {
         bb.emit('verify');
     });
 
-    it('should not emit a CONNECTING event but not a RECONNECTING event when _amqp.connect calls back without an error', function(done) {
+    it('should emit a CONNECTING event but not a RECONNECTING event when _amqp.connect calls back without an error', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
@@ -519,5 +519,4 @@ describe("busterbunny.js", function() {
         connectWithoutError(null, {});
         bb.emit('verify');
     });
-
 });
