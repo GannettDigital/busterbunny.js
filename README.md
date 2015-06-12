@@ -106,6 +106,8 @@ The current list of events (the property names) are ...
 0. ```PUBLISH_CHANNEL_ESTABLISHED``` when buster bunny is ready to publish events to an exchange
 0. ```PUBLISH_REQUESTED``` when an event has been raised with buster bunny
 0. ```EVENT_RECEIVED``` when buster bunny has received an event from amqp
+0. ```EVENT_ACKED``` when buster bunny has been asked to acknowledge an event
+0. ```EVENT_NACKED``` when buster bunny has been asked to reject or requeue an event
 
 Some Opinions To Be Aware Of
 ----------------------------

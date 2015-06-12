@@ -11,7 +11,15 @@ module.exports = (function() {
         var _eventPublishQueue = [];
         var _eventSubscribers = [];
         var _publishingChannel;
-        var _stats = { queuedEventsToRaise : 0, subscribers : 0, reconnects: 0 };
+        var _stats = {
+            queuedEventsToRaise : 0,
+            subscribers : 0,
+            reconnects: 0,
+            messagesAcknowledged: 0,
+            messagesRejected: 0,
+            messagesRejectedWithRetry: 0
+        };
+
         var _amqp = require('amqplib/callback_api');
         var _thresholds = { maxRaisedEvents : 100000, maxConsumers : 1000 };
 
@@ -27,7 +35,9 @@ module.exports = (function() {
             AMQP_ERROR: 'amqp-error',
             PUBLISH_CHANNEL_ESTABLISHED: 'publish-channel-established',
             PUBLISH_REQUESTED: 'publish-requested',
-            EVENT_RECEIVED: 'event-received'
+            EVENT_RECEIVED: 'event-received',
+            EVENT_ACKED: 'event-acknowledged',
+            EVENT_NACKED: 'event-nacked'
         });
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
@@ -169,15 +179,26 @@ module.exports = (function() {
                             var messageObj = {
                                 reject: function (requeue) {
                                     channel.nack(message, false, requeue);
+                                    if(requeue === true){
+                                        _stats.messagesRejectedWithRetry++;
+                                    } else {
+                                        _stats.messagesRejected++;
+                                    }
+                                    self.emit(self.EVENTS.EVENT_NACKED, message, requeue, new Date().getTime());
+
                                 },
                                 acknowledge: function () {
-                                    channel.ack(message, false)
+                                    channel.ack(message, false);
+                                    _stats.messagesAcknowledged++;
+                                    self.emit(self.EVENTS.EVENT_ACKED, message, new Date().getTime());
                                 }
                             };
 
                             self.emit(self.EVENTS.EVENT_RECEIVED, event, messageObj);
                         } catch (err) {
                             channel.nack(message, false, true);
+                            _stats.messagesRejectedWithRetry++;
+                            self.emit(self.EVENTS.EVENT_NACKED, message, false, new Date().getTime());
                         }
                     });
                 });
