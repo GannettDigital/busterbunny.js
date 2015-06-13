@@ -135,12 +135,12 @@ module.exports = (function() {
         }
 
         function connect() {
-            _amqp.connect(_url, function (err, conn) {
-                if (err) {
+            _amqp.connect(_url, function(err, conn) {
+                if(err) {
                     self.emit(self.EVENTS.RECONNECTING);
+                } else {
+                    self.emit(self.EVENTS.CONNECTING, conn);
                 }
-
-                self.emit(self.EVENTS.CONNECTING, conn);
             });
         }
 
