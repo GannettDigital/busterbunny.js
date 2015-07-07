@@ -79,7 +79,7 @@ module.exports = (function() {
                 throw new Error('afterRaised is required and must be a function');
 
             if(typeof eventId !== 'string') {
-                afterRaised(new Error('EventId is required and must be a string'));
+                afterRaised(new Error('eventId is required and must be a string'));
             } else {
                 _stats.queuedEventsToRaise++;
 
