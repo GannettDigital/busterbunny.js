@@ -70,14 +70,22 @@ module.exports = (function() {
         };
 
         self.raiseEvents = function (eventId, event, options, afterRaised) {
-            _stats.queuedEventsToRaise++;
             if (options instanceof Function) {
                 afterRaised = options;
                 options = null;
             }
 
-            var eventData = self.encoder.encodeEvent(event);
-            publishOrQueue(config.exchange, eventId, eventData, options, afterRaised);
+            if(afterRaised instanceof Function)
+                throw new Error('afterRaised is required and must be a function');
+
+            if(typeof eventId !== 'string') {
+                afterRaised(new Error('EventId is required and must be a string'));
+            } else {
+                _stats.queuedEventsToRaise++;
+
+                var eventData = self.encoder.encodeEvent(event);
+                publishOrQueue(config.exchange, eventId, eventData, options, afterRaised);
+            }
         };
 
         self.subscribe = function(onNextEventCallback) {
