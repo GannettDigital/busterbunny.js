@@ -70,13 +70,20 @@ module.exports = (function() {
         };
 
         self.raiseEvents = function (eventId, event, options, afterRaised) {
-            if (options instanceof Function) {
+
+            if (!(options instanceof Function || options instanceof Object))
+                throw new Error('the third argument must be either an Object or a Function');
+
+            if(options instanceof Function && afterRaised)
+                throw new Error('the third argument must be an object when a fourth argument is provided.');
+
+            if (options instanceof Function && !afterRaised) {
                 afterRaised = options;
                 options = null;
             }
 
-            if(afterRaised instanceof Function)
-                throw new Error('afterRaised is required and must be a function');
+            if(!(afterRaised instanceof Function))
+                throw new Error('the argument provided for callback is not a Function');
 
             if(typeof eventId !== 'string') {
                 afterRaised(new Error('eventId is required and must be a string'));

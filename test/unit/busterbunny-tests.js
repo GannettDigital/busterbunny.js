@@ -1,6 +1,7 @@
 describe("busterbunny.js", function() {
     var mockery = require('mockery');
     var assert = require('assert');
+
     var fakeConfig = {
         cluster: {
             host: 'host.host.it',
@@ -343,52 +344,6 @@ describe("busterbunny.js", function() {
         bb.raiseEvents('eventId', {}, {}, function() {});
     });
 
-    it('should raiseEvents with just eventId and event data', function(done) {
-        var AmqpMock = require('./mock-amqp.js');
-        var amqpMock = new AmqpMock();
-
-        amqpMock.connection.createChannel = function(cb) {
-            var channel = {
-                publish: function () {
-                    assert.ok(true);
-                    done();
-                }
-            };
-
-            cb(null, channel);
-        };
-
-        mockery.registerMock('amqplib/callback_api', amqpMock);
-
-        var BusterBunny = require('../../src/busterbunny.js');
-        var bb = new BusterBunny(fakeConfig);
-
-        bb.raiseEvents('eventId', {});
-    });
-
-    it('should raiseEvents with eventId and event data', function(done) {
-        var AmqpMock = require('./mock-amqp.js');
-        var amqpMock = new AmqpMock();
-
-        amqpMock.connection.createChannel = function(cb) {
-            var channel = {
-                publish: function () {
-                    assert.ok(true);
-                    done();
-                }
-            };
-
-            cb(null, channel);
-        };
-
-        mockery.registerMock('amqplib/callback_api', amqpMock);
-
-        var BusterBunny = require('../../src/busterbunny.js');
-        var bb = new BusterBunny(fakeConfig);
-
-        bb.raiseEvents('eventId', {});
-    });
-
     it('should raiseEvents with eventId, event data, and an afterRaised function', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
@@ -410,29 +365,6 @@ describe("busterbunny.js", function() {
         var bb = new BusterBunny(fakeConfig);
 
         bb.raiseEvents('eventId', {}, function() {});
-    });
-
-    it('should raiseEvents on open connection with no options and no callback', function(done) {
-        var AmqpMock = require('./mock-amqp.js');
-        var amqpMock = new AmqpMock();
-
-        amqpMock.connection.createChannel = function(cb) {
-            var channel = {
-                publish: function () {
-                    assert.ok(true);
-                    done();
-                }
-            };
-
-            cb(null, channel);
-        };
-
-        mockery.registerMock('amqplib/callback_api', amqpMock);
-
-        var BusterBunny = require('../../src/busterbunny.js');
-        var bb = new BusterBunny(fakeConfig);
-
-        bb.raiseEvents('eventId', {});
     });
 
     it('should call after raised when calling raiseEvents on open connection with options and callback', function(done) {
