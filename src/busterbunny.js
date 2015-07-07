@@ -70,10 +70,6 @@ module.exports = (function() {
         };
 
         self.raiseEvents = function (eventId, event, options, afterRaised) {
-
-            if (!(options instanceof Function || options instanceof Object))
-                throw new Error('the third argument must be either an Object or a Function');
-
             if(options instanceof Function && afterRaised)
                 throw new Error('the third argument must be an object when a fourth argument is provided.');
 
