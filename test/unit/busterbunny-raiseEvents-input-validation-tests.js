@@ -77,7 +77,6 @@ describe('busterbunny.js raiseEvents validation', function() {
             expect(err).to.be.instanceof(Error)
                 .with.deep.property('message')
                 .that.equals('eventId is required and must be a string');
-
             done();
         }
 
