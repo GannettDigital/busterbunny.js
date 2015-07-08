@@ -12,8 +12,8 @@ module.exports = (function() {
         var _eventSubscribers = [];
         var _publishingChannel;
         var _stats = {
-            queuedEventsToRaise : 0,
-            subscribers : 0,
+            queuedEventsToRaise: 0,
+            subscribers: 0,
             reconnects: 0,
             messagesAcknowledged: 0,
             messagesRejected: 0,
@@ -21,9 +21,9 @@ module.exports = (function() {
         };
 
         var _amqp = require('amqplib/callback_api');
-        var _thresholds = { maxRaisedEvents : 100000, maxConsumers : 1000 };
+        var _thresholds = {maxRaisedEvents: 100000, maxConsumers: 1000};
 
-        if (config.thresholds)
+        if(config.thresholds)
             merge(_thresholds, config.thresholds);
 
         self.EVENTS = Object.freeze({
@@ -60,46 +60,60 @@ module.exports = (function() {
         };
 
         self.encoder = {
-            encodeEvent : function(event) {
+            encodeEvent: function(event) {
                 return new Buffer(JSON.stringify(event));
             },
-            decodeEvent : function(message) {
+            decodeEvent: function(message) {
                 var eventContent = message.content.toString('utf8');
                 return JSON.parse(eventContent);
             }
         };
 
-        self.raiseEvents = function (eventId, event, options, afterRaised) {
-            _stats.queuedEventsToRaise++;
-            if (options instanceof Function) {
+        self.raiseEvents = function(eventId, event, options, afterRaised) {
+            if(options instanceof Function && afterRaised) {
+                throw new Error('the third argument must be an object when a fourth argument is provided');
+            }
+
+            if(options instanceof Function && !afterRaised) {
                 afterRaised = options;
                 options = null;
             }
 
-            var eventData = self.encoder.encodeEvent(event);
-            publishOrQueue(config.exchange, eventId, eventData, options, afterRaised);
+            if(!(afterRaised instanceof Function)) {
+                throw new Error('the argument provided for callback is not a Function');
+            }
+
+            if(typeof eventId !== 'string') {
+                afterRaised(new Error('eventId is required and must be a string'));
+            } else {
+                _stats.queuedEventsToRaise++;
+
+                var eventData = self.encoder.encodeEvent(event);
+                publishOrQueue(config.exchange, eventId, eventData, options, afterRaised);
+            }
         };
 
         self.subscribe = function(onNextEventCallback) {
             _eventSubscribers.push(onNextEventCallback);
             _stats.subscribers++;
 
-            if (_eventSubscribers.length == 1) {
+            if(_eventSubscribers.length == 1) {
                 createSubscriberChannel();
             }
 
-            if (_eventSubscribers.length >= _thresholds.maxConsumers) {
+            if(_eventSubscribers.length >= _thresholds.maxConsumers) {
                 self.emit(self.EVENTS.WARNING_RAISED, _eventSubscribers.length + ' consumers is greater than or equal to max of ' + _thresholds.maxConsumers);
             }
         };
 
         function publishOrQueue(exchange, eventId, eventData, options, afterRaised) {
             var args = [exchange, eventId, eventData];
-            if (options) args.push(options);
-            if (afterRaised) args.push(afterRaised);
+            if(options) args.push(options);
+            if(afterRaised) args.push(afterRaised);
+
             _eventPublishQueue.push(args);
 
-            if (_eventPublishQueue.length >= _thresholds.maxRaisedEvents) {
+            if(_eventPublishQueue.length >= _thresholds.maxRaisedEvents) {
                 self.emit(self.EVENTS.WARNING_RAISED, _eventPublishQueue.length + ' events queued is greater than or equal to max of ' + _thresholds.maxRaisedEvents);
             }
 
@@ -107,28 +121,28 @@ module.exports = (function() {
         }
 
         function publishQueuedRequestsRecursively() {
-            if (!_connected || !_publishingChannel) return;
+            if(!_connected || !_publishingChannel) return;
 
             var args = _eventPublishQueue.pop();
 
-            if (!args) return;
+            if(!args) return;
 
             //the last arg is a method for after invoking publish
             var afterRaised;
             var error;
 
-            if (args.length == 5)
-                afterRaised = args.splice(args.length-1, 1)[0];
+            if(args.length == 5)
+                afterRaised = args.splice(args.length - 1, 1)[0];
 
             try {
                 _publishingChannel.publish.apply(_publishingChannel, args);
                 _stats.queuedEventsToRaise--;
-            } catch (err) {
+            } catch(err) {
                 var eventId = args[1];
                 error = new Error('Event ' + eventId + ' failed to publish due to error: ' + err);
             }
 
-            if (afterRaised)
+            if(afterRaised)
                 afterRaised(error);
 
             publishQueuedRequestsRecursively();
@@ -150,10 +164,10 @@ module.exports = (function() {
         }
 
         function createPublisherChannel() {
-            if (!_connected) return;
+            if(!_connected) return;
 
-            _connection.createChannel(function (err, channel) {
-                if (err) {
+            _connection.createChannel(function(err, channel) {
+                if(err) {
                     throw new Error('Unexpected error encountered: ' + err);
                 }
 
@@ -163,23 +177,23 @@ module.exports = (function() {
         }
 
         function createSubscriberChannel() {
-            if (!_connected) return;
+            if(!_connected) return;
 
-            if (!config.queues) {
+            if(!config.queues) {
                 throw new Error("No queue configured");
             }
 
-            _connection.createChannel(function (err, channel) {
-                config.queues.forEach(function (queue) {
+            _connection.createChannel(function(err, channel) {
+                config.queues.forEach(function(queue) {
                     channel.assertQueue(queue.name);
-                    channel.consume(queue.name, function (message) {
+                    channel.consume(queue.name, function(message) {
                         try {
                             var event = self.encoder.decodeEvent(message);
 
                             var messageObj = {
-                                reject: function (requeue) {
+                                reject: function(requeue) {
                                     channel.nack(message, false, requeue);
-                                    if(requeue === true){
+                                    if(requeue === true) {
                                         _stats.messagesRejectedWithRetry++;
                                     } else {
                                         _stats.messagesRejected++;
@@ -187,7 +201,7 @@ module.exports = (function() {
                                     self.emit(self.EVENTS.EVENT_NACKED, message, requeue, new Date().getTime());
 
                                 },
-                                acknowledge: function () {
+                                acknowledge: function() {
                                     channel.ack(message, false);
                                     _stats.messagesAcknowledged++;
                                     self.emit(self.EVENTS.EVENT_ACKED, message, new Date().getTime());
@@ -195,7 +209,7 @@ module.exports = (function() {
                             };
 
                             self.emit(self.EVENTS.EVENT_RECEIVED, event, messageObj);
-                        } catch (err) {
+                        } catch(err) {
                             channel.nack(message, false, true);
                             _stats.messagesRejectedWithRetry++;
                             self.emit(self.EVENTS.EVENT_NACKED, message, false, new Date().getTime());
@@ -221,14 +235,14 @@ module.exports = (function() {
             self.emit(self.EVENTS.CONNECTED);
         });
 
-        self.on(self.EVENTS.RECONNECTING, function(){
+        self.on(self.EVENTS.RECONNECTING, function() {
             reconnect();
         });
 
         self.on(self.EVENTS.CONNECTED, function() {
             createPublisherChannel();
 
-            if (_eventSubscribers.length == 1) {
+            if(_eventSubscribers.length == 1) {
                 createSubscriberChannel();
             }
 
