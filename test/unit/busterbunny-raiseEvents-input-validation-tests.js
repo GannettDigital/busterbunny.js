@@ -1,4 +1,4 @@
-describe('busterbunny.js raiseEvents', function() {
+describe('busterbunny.js raiseEvents validation', function() {
     var assert = require('assert');
     var expect = require('chai').expect;
 
@@ -22,7 +22,7 @@ describe('busterbunny.js raiseEvents', function() {
         exchange: 'i.write.2.this1'
     };
 
-    it('should throw an Error when raiseEvents is called and both options and afterRaised are not specified', function() {
+    it('should throw an Error with an appropriate message when raiseEvents is called and both options and afterRaised are not specified', function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
@@ -30,10 +30,10 @@ describe('busterbunny.js raiseEvents', function() {
             bb.raiseEvents('eventId', {});
         }
 
-        expect(doIt).to.throw(Error);
+        expect(doIt).to.throw(Error, 'the argument provided for callback is not a Function');
     });
 
-    it('should throw an Error when raiseEvents is called and options is not a function and afterRaised is not specified', function() {
+    it('should throw an Error with an appropriate message when raiseEvents is called and options is not a function and afterRaised is not specified', function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
@@ -41,10 +41,10 @@ describe('busterbunny.js raiseEvents', function() {
             bb.raiseEvents('eventId', {}, {});
         }
 
-        expect(doIt).to.throw(Error);
+        expect(doIt).to.throw(Error, 'the argument provided for callback is not a Function');
     });
 
-    it('should throw an Error when raiseEvents is called and afterRaised is not a function', function() {
+    it('should throw an Error with an appropriate message when raiseEvents is called and afterRaised is not a function', function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
@@ -52,34 +52,39 @@ describe('busterbunny.js raiseEvents', function() {
             bb.raiseEvents('eventId', {}, {}, {afterRaised: 'not a function'});
         }
 
-        expect(doIt).to.throw(Error);
+        expect(doIt).to.throw(Error, 'the argument provided for callback is not a Function');
     });
 
-    it('should invoke afterRaised with an Error when eventId is not a string', function(done) {
+    it('should invoke afterRaised with an Error with an appropriate message when eventId is not a string', function(done) {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
         function afterRaised(err) {
-            expect(err).to.be.instanceof(Error);
+            expect(err).to.be.instanceof(Error)
+                .with.deep.property('message')
+                .that.equals('eventId is required and must be a string');
             done();
         }
 
         bb.raiseEvents({eventId: 'not a string'}, {}, {}, afterRaised);
     });
 
-    it('should invoke afterRaised with an Error when eventId is null', function(done) {
+    it('should invoke afterRaised with an Error with an appropriate message when eventId is null', function(done) {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
         function afterRaised(err) {
-            expect(err).to.be.instanceof(Error);
+            expect(err).to.be.instanceof(Error)
+                .with.deep.property('message')
+                .that.equals('eventId is required and must be a string');
+
             done();
         }
 
         bb.raiseEvents(null, {}, {}, afterRaised);
     });
 
-    it('should throw an Error when raiseEvents is called with options a non-object and afterRaised defined', function() {
+    it('should throw an Error with an appropriate message when raiseEvents is called with options a non-object and afterRaised defined', function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
@@ -87,6 +92,6 @@ describe('busterbunny.js raiseEvents', function() {
             bb.raiseEvents('eventId', {}, function() {}, function() {});
         }
 
-        expect(doIt).to.throw(Error);
+        expect(doIt).to.throw(Error, 'the third argument must be an object when a fourth argument is provided');
     });
 });
