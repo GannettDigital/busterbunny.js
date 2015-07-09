@@ -34,7 +34,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
         exchange: 'i.write.2.this1'
     };
 
-    it('should invoke afterRaised without parameters when options are specified publish is successful', function(done) {
+    it('should invoke afterRaised without parameters when options are specified and channel publish is successful', function(done) {
         var eventId = 'someValidString';
         var event = {};
         var options = {};
@@ -67,7 +67,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
         busterBunny.raiseEvents(eventId, event, options, afterRaised);
     });
 
-    it('should invoke afterRaised without parameters when options are not specified publish is successful', function(done) {
+    it('should invoke afterRaised without parameters when options are not specified and channel publish is successful', function(done) {
         var eventId = 'someValidString';
         var event = {};
         var options = undefined;
