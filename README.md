@@ -128,3 +128,5 @@ Some Opinions To Be Aware Of
 * The library also WARNS BUT DOENS'T REJECT when thresholds are hit allowing applications to handle the warning gracefully.
 * The library doesn't enforce the format of event messages.
 * The library does want all events to at least have an identifier and data.
+* The library requires both onNextEvent and raiseEvents to have callback functions, as they operate asynchronously. 
+
