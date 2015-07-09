@@ -109,7 +109,7 @@ module.exports = (function() {
         function publishOrQueue(exchange, eventId, eventData, options, afterRaised) {
             var args = [exchange, eventId, eventData];
             if(options) args.push(options);
-            if(afterRaised) args.push(afterRaised);
+            args.push(afterRaised);
 
             _eventPublishQueue.push(args);
 
@@ -127,24 +127,17 @@ module.exports = (function() {
 
             if(!args) return;
 
-            //the last arg is a method for after invoking publish
-            var afterRaised;
-            var error;
-
-            if(args.length == 5)
-                afterRaised = args.splice(args.length - 1, 1)[0];
+            var afterRaised = args.splice(args.length - 1, 1)[0];
 
             try {
                 _publishingChannel.publish.apply(_publishingChannel, args);
                 _stats.queuedEventsToRaise--;
+                afterRaised();
             } catch(err) {
                 var eventId = args[1];
-                error = new Error('Event ' + eventId + ' failed to publish due to error: ' + err);
-            }
-
-            if(afterRaised)
+                var error = new Error('Event ' + eventId + ' failed to publish due to error: ' + err);
                 afterRaised(error);
-
+            }
             publishQueuedRequestsRecursively();
         }
 

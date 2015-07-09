@@ -1,4 +1,4 @@
-describe('busterbunny.js raiseEvents validation', function() {
+describe('busterbunny.js raiseEvents input validation', function() {
     var assert = require('assert');
     var expect = require('chai').expect;
 
