@@ -68,15 +68,24 @@ var config = {
 //init buster bunny
 var busterBunny = new BusterBunny(config.amqp);
 
+//define a callback (or do so anonymously inline)
+function onAfterRaised(err) {
+    //handle the error if it exists, or continue
+}
+
 //raise event against bus
 //this will be done when connection and channel is available
-busterBunny.raiseEvents('kicked.bucket.1001', { data: { count : 9001 } });
+busterBunny.raiseEvents('kicked.bucket.1001', { data: { count : 9001 } }, onAfterRaised);
+
+//raise events against, providing AMQP options (see amqplib for available options)
+busterBunny.raiseEvents('kicked.bucket.1002', { data: { count : 9002 } }, {amqp: 'options here}, onAfterRaised);
 
 //subscribe to events from bus
 //this will be done when connection and channel is available
 busterBunny.onNextEvent(function(event) {
     console.log("I found a " +  event.type + " event!");
 });
+
 ```
 
 Events
