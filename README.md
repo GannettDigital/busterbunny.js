@@ -75,10 +75,14 @@ function onAfterRaised(err) {
 
 //raise event against bus
 //this will be done when connection and channel is available
+
+//raise events without AMQP options (see amqplib for available options)
 busterBunny.raiseEvents('id.1001', { data: { x: 9001 } }, onAfterRaised);
 
-//raise events against, providing AMQP options (see amqplib for available options)
+//raise events, providing AMQP options 
 busterBunny.raiseEvents('id.1002', { data: { x: 9002 } }, {amqp: 'options here'}, onAfterRaised);
+
+//NOTE: calls to raiseEvents are required to provide a callback as the last parameter
 
 //subscribe to events from bus
 //this will be done when connection and channel is available
