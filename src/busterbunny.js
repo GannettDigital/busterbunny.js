@@ -4,6 +4,11 @@ module.exports = (function() {
     var util = require('util');
     var format = require('string-format');
 
+    /**
+     * @class
+     * @param {Object} config - the configuration object for the queues and exchange for this instance of the event bus
+     * @constructor
+     */
     function BusterBunny(config) {
         var self = this;
         var _connection;
@@ -54,7 +59,7 @@ module.exports = (function() {
         self.getStats = function() {
             return _stats;
         };
-
+        
         self.getUrl = function() {
             return _url;
         };
@@ -69,6 +74,19 @@ module.exports = (function() {
             }
         };
 
+        /**
+         * The callback the defines what to do after an event has been raised on the bus
+         * @callback BusterBunny~afterRaised
+         * @param err - if truthy, then an error occurred, otherwise success can be assumed
+         */
+
+        /**
+         *
+         * @param {string} eventId - the identifier for the event
+         * @param event - the event to place on the bus
+         * @param {Object} [options] - AMQPlib options object
+         * @param {BusterBunny~afterRaised} afterRaised - required callback for after an event has been raised
+         */
         self.raiseEvents = function(eventId, event, options, afterRaised) {
             if(options instanceof Function && afterRaised) {
                 throw new Error('the third argument must be an object when a fourth argument is provided');
@@ -93,6 +111,17 @@ module.exports = (function() {
             }
         };
 
+        /**
+         * The callback that defines what a given subscriber does when an event is read from the bus
+         * @callback BusterBunny~onNextEventCallback
+         * @param {Object} event - the event that was decoded from the AMQP message
+         * @param {Object} message - the encapsulating AMQP message
+         */
+
+        /**
+         * Subscribe to events from the configured queue(s)
+         * @param {BusterBunny~onNextEventCallback} onNextEventCallback - callback for subscribers to the bus
+         */
         self.subscribe = function(onNextEventCallback) {
             _eventSubscribers.push(onNextEventCallback);
             _stats.subscribers++;
