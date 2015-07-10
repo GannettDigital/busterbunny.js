@@ -86,7 +86,7 @@ busterBunny.raiseEvents('id.1002', { data: { x: 9002 } }, {amqp: 'options here'}
 
 //subscribe to events from bus
 //this will be done when connection and channel is available
-busterBunny.onNextEvent(function(event) {
+busterBunny.subscribe(function(event) {
     console.log("I found a " +  event.type + " event!");
 });
 
