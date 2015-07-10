@@ -68,15 +68,28 @@ var config = {
 //init buster bunny
 var busterBunny = new BusterBunny(config.amqp);
 
+//define an onAfterRaised callback
+function onAfterRaised(err) {
+    //handle the error if it exists, or continue
+}
+
 //raise event against bus
 //this will be done when connection and channel is available
-busterBunny.raiseEvents('kicked.bucket.1001', { data: { count : 9001 } });
+
+//raise events without AMQP options (see amqplib for available options)
+busterBunny.raiseEvents('id.1001', { data: { x: 9001 } }, onAfterRaised);
+
+//raise events, providing AMQP options 
+busterBunny.raiseEvents('id.1002', { data: { x: 9002 } }, {amqp: 'options here'}, onAfterRaised);
+
+//NOTE: calls to raiseEvents are required to provide a callback as the last parameter
 
 //subscribe to events from bus
 //this will be done when connection and channel is available
-busterBunny.onNextEvent(function(event) {
+busterBunny.subscribe(function(event) {
     console.log("I found a " +  event.type + " event!");
 });
+
 ```
 
 Events
@@ -115,3 +128,5 @@ Some Opinions To Be Aware Of
 * The library also WARNS BUT DOENS'T REJECT when thresholds are hit allowing applications to handle the warning gracefully.
 * The library doesn't enforce the format of event messages.
 * The library does want all events to at least have an identifier and data.
+* The library requires specification of a callback for both `subscribe` and `raiseEvents`
+
