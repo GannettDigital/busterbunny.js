@@ -68,7 +68,7 @@ var config = {
 //init buster bunny
 var busterBunny = new BusterBunny(config.amqp);
 
-//define a callback (or do so anonymously inline)
+//define an onAfterRaised callback
 function onAfterRaised(err) {
     //handle the error if it exists, or continue
 }
@@ -128,5 +128,5 @@ Some Opinions To Be Aware Of
 * The library also WARNS BUT DOENS'T REJECT when thresholds are hit allowing applications to handle the warning gracefully.
 * The library doesn't enforce the format of event messages.
 * The library does want all events to at least have an identifier and data.
-* The library requires both onNextEvent and raiseEvents to have callback functions, as they operate asynchronously. 
+* The library requires specification of a callback for both `subscribe` and `raiseEvents`
 
