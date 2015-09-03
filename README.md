@@ -86,8 +86,24 @@ busterBunny.raiseEvents('id.1002', { data: { x: 9002 } }, {amqp: 'options here'}
 
 //subscribe to events from bus
 //this will be done when connection and channel is available
-busterBunny.subscribe(function(event) {
-    console.log("I found a " +  event.type + " event!");
+busterBunny.subscribe(function(event, message) {
+    console.log("I found a " + event.type + " event!");
+
+    doAnAsyncOperationWithTheEvent(event, function(error, someData) {
+        if(error) {
+            if(exception === 'we can recover from this error, eventually') {
+                //requeue the message like this
+                message.reject(true);
+
+            } else {
+                //or reject and remove it from the bus
+                message.reject();
+            }
+        } else {
+            message.acknowledge();
+        }
+
+    });
 });
 
 ```
