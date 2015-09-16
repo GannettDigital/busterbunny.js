@@ -119,6 +119,113 @@ describe("busterbunny.js", function() {
         });
     });
 
+    it('should set the prefetch count of the created channel if it is specified in the configuration', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        var fakeConfig = {
+            cluster: {
+                host: 'host.host.it',
+                port: 5672,
+                vhost: '/',
+                login: 'someguy',
+                password: '2insecure',
+                heartbeat: 10
+            },
+            channelPrefetchCount: 12,
+            queues: [
+                {
+                    name: 'i.read.from.this2'
+                }
+            ],
+            exchange: 'i.write.2.this1'
+        };
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.nack = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+            channel.prefetch = function(count){
+                assert.equal(count, fakeConfig.channelPrefetchCount);
+                done();
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.subscribe(function(event, messageObj) {
+        });
+    });
+
+    it('should not set the prefetch count if the configuration channelPrefetchCount property is 0', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        var fakeConfig = {
+            cluster: {
+                host: 'host.host.it',
+                port: 5672,
+                vhost: '/',
+                login: 'someguy',
+                password: '2insecure',
+                heartbeat: 10
+            },
+            channelPrefetchCount: 0,
+            queues: [
+                {
+                    name: 'i.read.from.this2'
+                }
+            ],
+            exchange: 'i.write.2.this1'
+        };
+
+        amqpMock.connection.createChannel = function(cb) {
+            var channel = {};
+            channel.assertQueue = function() {};
+            channel.nack = function() {};
+            channel.consume = function(name, callback) {
+                var message = {
+                    content : {
+                        toString : function() {
+                            return "{}";
+                        }
+                    }
+                };
+                callback(message, {});
+            };
+            channel.prefetch = function(count){
+                assert.fail('The channel prefetch count should not be set when the config does not specify a value.');
+                done();
+            };
+
+            cb(null, channel);
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.subscribe(function(event, messageObj) {
+            done();
+        });
+    });
+
     it('should update the messagesAcknowledged stat when message is acked', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();

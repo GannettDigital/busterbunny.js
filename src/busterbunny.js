@@ -207,8 +207,8 @@ module.exports = (function() {
 
             _connection.createChannel(function(err, channel) {
                 config.queues.forEach(function(queue) {
-                    if(config.prefetchCount) {
-                        channel.prefetch(prefetchCount);
+                    if(config.channelPrefetchCount) {
+                        channel.prefetch(config.channelPrefetchCount);
                     }
                     channel.assertQueue(queue.name);
                     channel.consume(queue.name, function(message) {
