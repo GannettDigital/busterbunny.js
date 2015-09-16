@@ -206,10 +206,10 @@ module.exports = (function() {
             }
 
             _connection.createChannel(function(err, channel) {
+                if(config.channelPrefetchCount) {
+                    channel.prefetch(config.channelPrefetchCount);
+                }
                 config.queues.forEach(function(queue) {
-                    if(config.channelPrefetchCount) {
-                        channel.prefetch(config.channelPrefetchCount);
-                    }
                     channel.assertQueue(queue.name);
                     channel.consume(queue.name, function(message) {
                         try {
