@@ -13,7 +13,8 @@ after_script:
 
 deploy:
   provider: npm
-  email: "kristopher.l.alexander@gmail.com"
-  api_key: "YmluYXJ5YWxjaGVtaXN0OmJhcmRvY2slU1I3MQ=="
+  email: jhaugh42@gmail.com
+  api_key:
+    secure: fZNisClO1wRj34fB9zQjllxJ8CQRtqiqJbxK5mWFe44PHVtZ/xtrMxsDoQQ8BimSSKzaOvkhRhLEC5f+d2emef6kl0ovK2dcqLKqe+Uxv2SGBeV8KYxWw5zHWf8zpVkJXkgze8Px0TE8rZh5U/9BqSZGu+cdyKd/2OMBdR6mxlNGrXmXH8rXkM7NyYmBSOqrVkTB+np3zfzfkfZ4JnVr7sFUhbJc7QoWbqVNbic5L9Jqq1GMHtS7KvJroDQgNDz2/6Q7GdJVQ7FBPMnQpsm8ebL178RGjn4El0CXEGzixZUhlKVFns2O1dEG4cIfTHL/q18byTrEexzv9MEr8UFdNj8Qd/R4mGQ73BrvUCWFdgRlLq1mfVRrLq6XTzdZXbXna9+6qlg0Mlc2/DTsIFuIYUDxoGuWNcAiYkNvZDDexxOpVG8qqH8mk8568I5yJBE3ScKQ7LdlYad8xARHjh5V5YRjgC57NaEK+KkPlBKbUud0oRxsIKf0K+QO2YOwwPW3PDYwzkVuPSZb8fB3VFOVIujUMca2Qq/3cX60owABOMUcv8pEEA3/9k5lHmxw8CnriMgcgvcJAes1RRb614ktKqgxUJZKb3c1xWJGJaeOphXqpaeZjySGPcZ+PDna1C46jiSQIdn+HHZ7HajsMCx/OzqJ2Tvq0K22oB53DX5R16A=
   on:
     tags: true
