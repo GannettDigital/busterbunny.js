@@ -1,20 +1,17 @@
 language: node_js
 node_js:
-  - "0.12"
-
+- '0.12'
 before_script:
-  - npm install -g mocha
-  - npm install -g istanbul
-  - npm install coveralls
-  - npm install mockery
-
+- npm install -g mocha
+- npm install -g istanbul
+- npm install coveralls
+- npm install mockery
 after_script:
-  - npm run coveralls
-
+- npm run coveralls
 deploy:
   provider: npm
   email: jhaugh42@gmail.com
   api_key:
-    secure: fZNisClO1wRj34fB9zQjllxJ8CQRtqiqJbxK5mWFe44PHVtZ/xtrMxsDoQQ8BimSSKzaOvkhRhLEC5f+d2emef6kl0ovK2dcqLKqe+Uxv2SGBeV8KYxWw5zHWf8zpVkJXkgze8Px0TE8rZh5U/9BqSZGu+cdyKd/2OMBdR6mxlNGrXmXH8rXkM7NyYmBSOqrVkTB+np3zfzfkfZ4JnVr7sFUhbJc7QoWbqVNbic5L9Jqq1GMHtS7KvJroDQgNDz2/6Q7GdJVQ7FBPMnQpsm8ebL178RGjn4El0CXEGzixZUhlKVFns2O1dEG4cIfTHL/q18byTrEexzv9MEr8UFdNj8Qd/R4mGQ73BrvUCWFdgRlLq1mfVRrLq6XTzdZXbXna9+6qlg0Mlc2/DTsIFuIYUDxoGuWNcAiYkNvZDDexxOpVG8qqH8mk8568I5yJBE3ScKQ7LdlYad8xARHjh5V5YRjgC57NaEK+KkPlBKbUud0oRxsIKf0K+QO2YOwwPW3PDYwzkVuPSZb8fB3VFOVIujUMca2Qq/3cX60owABOMUcv8pEEA3/9k5lHmxw8CnriMgcgvcJAes1RRb614ktKqgxUJZKb3c1xWJGJaeOphXqpaeZjySGPcZ+PDna1C46jiSQIdn+HHZ7HajsMCx/OzqJ2Tvq0K22oB53DX5R16A=
+    secure: Zu7HpQdf6pRoOu3X49ipxnaZev+LHbDklpCxR5NeR/jMwotk2o2Vl1Q4Kp1nOuaiZU9aWcklp2Gt1Bxpb4P977QtnN7XKYqCa0+j+75LUyGgTliyZ4+lbDqJx4FXWyC17rWxhocDWUnuqz1TMNho58z9a/TLGKI1tcX504DVT29Oke4zvyyQhVwU0hRdSh7tRrn6G7WA8et0X4ye+PV4e9nMrn3b0qxmEiCY3zn3MI35QFaXgCZazpChH3DwLTqn07FWiK2LRbkjrPWfjAIkeLqlH7WWuABTbosAMYnrfzaXQY6fhxOj2cIG6s+CVhWcMN47/359+qYpcyePPNfrdbwTmwjpFhhFhWEM7dlVJwpYApAucz4gVrznAOJf+qAj1/CL+lTknoJ8M0bw+9rASL/DDiJjFlncJhc404wl3FtlE7J0KzuNd+CLk2ov4ZpwYu6UEO5/jN+4O+v9VdiVHLb3Y4xnO0zwkmeqZVmwQb0FomY+Y/oealuTH0VvwEOTjotddGEGOOnStBmT6HjF8A0DeX1Gc7OU6cEIiIw3P1pP/nva7PJuCRHHL9+I+OxeZBtPyC8xzzUr7PMoZDYzfmY9yljXosCbT7pRDVkHvLBmbtOMYVNlYX22a3MMgbrEdxz0P2xKZjpteaulSs2kDvHipo/gbhFQD+VzH6OaL7Y=
   on:
     tags: true
