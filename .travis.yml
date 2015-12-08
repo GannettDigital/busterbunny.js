@@ -10,7 +10,7 @@ after_script:
 - npm run coveralls
 deploy:
   provider: npm
-  email: jhaugh42@gmail.com
+  email: npm-publisher@dhutia.net
   api_key:
     secure: Zu7HpQdf6pRoOu3X49ipxnaZev+LHbDklpCxR5NeR/jMwotk2o2Vl1Q4Kp1nOuaiZU9aWcklp2Gt1Bxpb4P977QtnN7XKYqCa0+j+75LUyGgTliyZ4+lbDqJx4FXWyC17rWxhocDWUnuqz1TMNho58z9a/TLGKI1tcX504DVT29Oke4zvyyQhVwU0hRdSh7tRrn6G7WA8et0X4ye+PV4e9nMrn3b0qxmEiCY3zn3MI35QFaXgCZazpChH3DwLTqn07FWiK2LRbkjrPWfjAIkeLqlH7WWuABTbosAMYnrfzaXQY6fhxOj2cIG6s+CVhWcMN47/359+qYpcyePPNfrdbwTmwjpFhhFhWEM7dlVJwpYApAucz4gVrznAOJf+qAj1/CL+lTknoJ8M0bw+9rASL/DDiJjFlncJhc404wl3FtlE7J0KzuNd+CLk2ov4ZpwYu6UEO5/jN+4O+v9VdiVHLb3Y4xnO0zwkmeqZVmwQb0FomY+Y/oealuTH0VvwEOTjotddGEGOOnStBmT6HjF8A0DeX1Gc7OU6cEIiIw3P1pP/nva7PJuCRHHL9+I+OxeZBtPyC8xzzUr7PMoZDYzfmY9yljXosCbT7pRDVkHvLBmbtOMYVNlYX22a3MMgbrEdxz0P2xKZjpteaulSs2kDvHipo/gbhFQD+VzH6OaL7Y=
   on:
