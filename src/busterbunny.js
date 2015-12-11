@@ -237,7 +237,7 @@ module.exports = (function() {
                         } catch(err) {
                             channel.nack(message, false, true);
                             _stats.messagesRejectedWithRetry++;
-                            self.emit(self.EVENTS.EVENT_NACKED, null, message, false, new Date().getTime());
+                            self.emit(self.EVENTS.EVENT_NACKED, null, message, true, new Date().getTime());
                         }
                     });
                 });
