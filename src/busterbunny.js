@@ -223,13 +223,13 @@ module.exports = (function() {
                                     } else {
                                         _stats.messagesRejected++;
                                     }
-                                    self.emit(self.EVENTS.EVENT_NACKED, message, requeue, new Date().getTime());
+                                    self.emit(self.EVENTS.EVENT_NACKED, event, message, requeue, new Date().getTime());
 
                                 },
                                 acknowledge: function() {
                                     channel.ack(message, false);
                                     _stats.messagesAcknowledged++;
-                                    self.emit(self.EVENTS.EVENT_ACKED, message, new Date().getTime());
+                                    self.emit(self.EVENTS.EVENT_ACKED, event, message, new Date().getTime());
                                 }
                             };
 
@@ -237,7 +237,7 @@ module.exports = (function() {
                         } catch(err) {
                             channel.nack(message, false, true);
                             _stats.messagesRejectedWithRetry++;
-                            self.emit(self.EVENTS.EVENT_NACKED, message, false, new Date().getTime());
+                            self.emit(self.EVENTS.EVENT_NACKED, null, message, false, new Date().getTime());
                         }
                     });
                 });

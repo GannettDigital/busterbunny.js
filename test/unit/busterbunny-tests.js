@@ -303,7 +303,7 @@ describe("busterbunny.js", function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
-        bb.on(bb.EVENTS.EVENT_ACKED, function(message, timestamp){
+        bb.on(bb.EVENTS.EVENT_ACKED, function(event, message, timestamp){
             assert.equal(!message, false);
             assert(typeof timestamp === 'number');
             done();
@@ -349,7 +349,7 @@ describe("busterbunny.js", function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
-        bb.on(bb.EVENTS.EVENT_NACKED, function(message, requeue, timestamp) {
+        bb.on(bb.EVENTS.EVENT_NACKED, function(event, message, requeue, timestamp) {
             assert.equal(!message, false);
             assert(typeof requeue === 'boolean');
             assert.equal(requeue, true);
@@ -397,7 +397,7 @@ describe("busterbunny.js", function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
-        bb.on(bb.EVENTS.EVENT_NACKED, function(message, requeue, timestamp) {
+        bb.on(bb.EVENTS.EVENT_NACKED, function(event, message, requeue, timestamp) {
             assert.equal(!message, false);
             assert(typeof requeue === 'boolean');
             assert.equal(requeue, false);

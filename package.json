@@ -1,6 +1,6 @@
 {
   "name": "busterbunny",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "description": "Opinionated EventBus Library for amqplib",
   "license": "MIT",
   "main": "src/busterbunny.js",
