@@ -212,9 +212,16 @@ module.exports = (function() {
                 config.queues.forEach(function(queue) {
                     channel.assertQueue(queue.name);
                     channel.consume(queue.name, function(message) {
+                        var event;
                         try {
-                            var event = self.encoder.decodeEvent(message);
+                            event = self.encoder.decodeEvent(message);
+                        } catch(err) {
+                            channel.nack(message, false, false);
+                            _stats.messagesRejectedWithRetry++;
+                            self.emit(self.EVENTS.EVENT_NACKED, null, message, false, new Date().getTime());
+                        }
 
+                        if(event) {
                             var messageObj = {
                                 reject: function(requeue) {
                                     channel.nack(message, false, requeue);
@@ -234,10 +241,6 @@ module.exports = (function() {
                             };
 
                             self.emit(self.EVENTS.EVENT_RECEIVED, event, messageObj);
-                        } catch(err) {
-                            channel.nack(message, false, true);
-                            _stats.messagesRejectedWithRetry++;
-                            self.emit(self.EVENTS.EVENT_NACKED, null, message, true, new Date().getTime());
                         }
                     });
                 });
