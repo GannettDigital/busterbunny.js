@@ -127,16 +127,27 @@ busterBunny.on(busterBunny.EVENTS.WARNING_RAISED, function(msg) {
 The current list of events (the property names) are ...
 
 0. ```WARNING_RAISED``` when a warning (like when a threshold is reached) has been reached
+	* Parameters: `warningMessage`
 0. ```READY``` when buster bunny has successfully established or re-established a connection and channels are available
+	* No Parameters
 0. ```CONNECTING``` when buster bunny is establishing connections
+	* Parameters: `connection` 
 0. ```RECONNECTING``` after a connection has been lost but before it has been reconnected
+	* No Parameters 
 0. ```CONNECTED``` after a connection has been established
+	* No Parameters
 0. ```AMQP_ERROR``` when the amqplib throws an error
+	* Parameters: `error` 
 0. ```PUBLISH_CHANNEL_ESTABLISHED``` when buster bunny is ready to publish events to an exchange
+	* No Parameters
 0. ```PUBLISH_REQUESTED``` when an event has been raised with buster bunny
+	* No Parameters
 0. ```EVENT_RECEIVED``` when buster bunny has received an event from amqp
+	* Parameters: `event`, `message` 
 0. ```EVENT_ACKED``` when buster bunny has been asked to acknowledge an event
+	* Parameters: `event`, `message`, `timeAcked` 
 0. ```EVENT_NACKED``` when buster bunny has been asked to reject or requeue an event
+	* Parameters: `event`, `message`, `requeued`, `timeNacked` 
 
 Some Opinions To Be Aware Of
 ----------------------------
