@@ -217,7 +217,7 @@ module.exports = (function() {
                             event = self.encoder.decodeEvent(message);
                         } catch(err) {
                             channel.nack(message, false, false);
-                            _stats.messagesRejectedWithRetry++;
+                            _stats.messagesRejected++;
                             self.emit(self.EVENTS.EVENT_NACKED, null, message, false, new Date().getTime());
                         }
 
