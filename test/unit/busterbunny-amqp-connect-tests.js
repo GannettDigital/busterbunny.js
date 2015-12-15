@@ -24,11 +24,6 @@ describe('busterbunny.js - amqp connect callback', function() {
 
     before(function() {
         mockery.enable({useCleanCache: true});
-        mockery.registerAllowable('events');
-        mockery.registerAllowable('os', true);
-        mockery.registerAllowable('string-format');
-        mockery.registerAllowable('./mock-amqp.js');
-        mockery.registerAllowable('../../src/busterbunny.js', true);
     });
 
     afterEach(function() {
@@ -184,7 +179,7 @@ describe('busterbunny.js - amqp connect callback', function() {
         };
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
-        
+
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
     });

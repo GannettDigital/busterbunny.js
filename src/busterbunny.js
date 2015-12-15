@@ -18,7 +18,7 @@ module.exports = (function() {
         var _eventPublishQueue = [];
         var _eventSubscribers = [];
         var _publishingChannel;
-        var _connectionProperties = buildConnectionProperties();
+        var _clientProperties = buildClientProperties();
 
         var _stats = {
             queuedEventsToRaise: 0,
@@ -139,7 +139,7 @@ module.exports = (function() {
             }
         };
 
-        function buildConnectionProperties(){
+        function buildClientProperties(){
             var properties = {};
             properties['ip'] = ip.address();
             properties['hostname'] = os.hostname();
@@ -183,7 +183,7 @@ module.exports = (function() {
         }
 
         function connect() {
-            _amqp.connect(_url, { clientProperties: _connectionProperties }, function(err, conn) {
+            _amqp.connect(_url, { clientProperties: _clientProperties }, function(err, conn) {
                 if(err) {
                     self.emit(self.EVENTS.RECONNECTING);
                 } else {
