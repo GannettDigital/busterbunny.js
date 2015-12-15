@@ -46,7 +46,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
-        amqpMock.connect = function(someUrl, onConnected) {
+        amqpMock.connect = function(someUrl, options, onConnected) {
             onConnected(null, {
                 createChannel: function(onChannelCreated) {
                     onChannelCreated(null, {
@@ -79,7 +79,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
-        amqpMock.connect = function(someUrl, onConnected) {
+        amqpMock.connect = function(someUrl, options, onConnected) {
             onConnected(null, {
                 createChannel: function(onChannelCreated) {
                     onChannelCreated(null, {
@@ -117,7 +117,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
-        amqpMock.connect = function(someUrl, onConnected) {
+        amqpMock.connect = function(someUrl, options, onConnected) {
             onConnected(null, {
                 createChannel: function(onChannelCreated) {
                     onChannelCreated(null, {
@@ -156,7 +156,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
-        amqpMock.connect = function(someUrl, onConnected) {
+        amqpMock.connect = function(someUrl, options, onConnected) {
             onConnected(null, {
                 createChannel: function(onChannelCreated) {
                     onChannelCreated(null, {

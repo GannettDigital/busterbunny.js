@@ -7,7 +7,7 @@ module.exports = (function() {
         mock.connection = new EventEmitter();
         mock.connection.createChannel = function() {};
 
-        mock.connect = function(url, connectionCallback) {
+        mock.connect = function(url, options, connectionCallback) {
             connectionCallback(null, mock.connection);
         };
 

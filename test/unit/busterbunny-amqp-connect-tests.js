@@ -1,6 +1,7 @@
 describe('busterbunny.js - amqp connect callback', function() {
     var mockery = require('mockery');
     var assert = require('assert');
+    var sinon = require('sinon');
     var fakeConfig = {
         cluster: {
             host: 'host.host.it',
@@ -27,6 +28,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
     afterEach(function() {
         mockery.deregisterAll();
+        mockery.resetCache();
     });
 
     it('should emit a RECONNECTING event when _amqp.connect calls back with an error', function(done) {
@@ -35,7 +37,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
         var connectWithError;
 
-        amqpMock.connect = function(url, onConnect) {
+        amqpMock.connect = function(url, options, onConnect) {
             connectWithError = onConnect;
         };
 
@@ -62,7 +64,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
         var connectWithoutError;
 
-        amqpMock.connect = function(url, onConnect) {
+        amqpMock.connect = function(url, options, onConnect) {
             connectWithoutError = onConnect;
         };
 
@@ -89,7 +91,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
         var connectWithError;
 
-        amqpMock.connect = function(url, onConnect) {
+        amqpMock.connect = function(url, options, onConnect) {
             connectWithError = onConnect;
         };
 
@@ -122,13 +124,73 @@ describe('busterbunny.js - amqp connect callback', function() {
         bb.emit('verify');
     });
 
+    it('should include client IP in the clientProperties hash on connect', function(done) {
+        var amqpMock = {};
+
+        amqpMock.connect = function(url, options, onConnect) {
+            assert.strictEqual(options['clientProperties']['ip'], '1.2.3.4');
+            done();
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var ipMock = {
+            address: function(){return '1.2.3.4'}
+        };
+        mockery.registerMock('ip', ipMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+    });
+
+    it('should include client hostname in the clientProperties hash on connect', function(done) {
+        var amqpMock = {};
+
+        amqpMock.connect = function(url, options, onConnect) {
+            assert.strictEqual(options['clientProperties']['hostname'], 'testHost');
+            done();
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var osMock = {
+            hostname: function(){return 'testHost'}
+        };
+        mockery.registerMock('os', osMock);
+
+        var ipMock = {
+            address: function(){return '1.2.3.4'}
+        };
+        mockery.registerMock('ip', ipMock);
+
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+    });
+
+    it('should include client application name in the clientProperties hash on connect', function(done) {
+        var amqpMock = {};
+
+        process.env.npm_package_name = 'myTestApp';
+
+        amqpMock.connect = function(url, options, onConnect) {
+            assert.strictEqual(options['clientProperties']['application'], process.env.npm_package_name);
+            done();
+        };
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+    });
+
     it('should emit a CONNECTING event but not a RECONNECTING event when _amqp.connect calls back without an error', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
 
         var connectWithoutError;
 
-        amqpMock.connect = function(url, onConnect) {
+        amqpMock.connect = function(url, options, onConnect) {
             connectWithoutError = onConnect;
         };
 
