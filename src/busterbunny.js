@@ -3,6 +3,8 @@ module.exports = (function() {
     var merge = require('merge');
     var util = require('util');
     var format = require('string-format');
+    var ip = require('ip');
+    var os = require('os');
 
     /**
      * @class
@@ -16,6 +18,8 @@ module.exports = (function() {
         var _eventPublishQueue = [];
         var _eventSubscribers = [];
         var _publishingChannel;
+        var _connectionProperties = buildConnectionProperties();
+
         var _stats = {
             queuedEventsToRaise: 0,
             subscribers: 0,
@@ -135,6 +139,14 @@ module.exports = (function() {
             }
         };
 
+        function buildConnectionProperties(){
+            var properties = {};
+            properties['ip'] = ip.address();
+            properties['hostname'] = os.hostname();
+            properties['application'] = process.env.npm_package_name;
+            return properties;
+        }
+
         function publishOrQueue(exchange, eventId, eventData, options, afterRaised) {
             var args = [exchange, eventId, eventData];
             if(options) args.push(options);
@@ -171,7 +183,7 @@ module.exports = (function() {
         }
 
         function connect() {
-            _amqp.connect(_url, function(err, conn) {
+            _amqp.connect(_url, { clientProperties: _connectionProperties }, function(err, conn) {
                 if(err) {
                     self.emit(self.EVENTS.RECONNECTING);
                 } else {
