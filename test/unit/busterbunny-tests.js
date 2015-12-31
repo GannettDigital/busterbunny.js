@@ -29,6 +29,10 @@ describe("busterbunny.js", function() {
         });
     });
 
+    beforeEach(function(){
+        mockery.warnOnUnregistered(false);
+    });
+
     afterEach(function() {
         mockery.deregisterAll();
     });
@@ -699,4 +703,28 @@ describe("busterbunny.js", function() {
         bb.subscribe(function() {});
         bb.subscribe(function() {});
     });
+
+    it('should emit heartbeat with stats if config.heartbeatInterval is provided', function(done) {
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+        amqpMock.connect = function() {};
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        fakeConfig.stats = 1;
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.on(bb.EVENTS.STATS, function(stats) {
+            assert.equal(stats.queuedEventsToRaise, 0);
+            assert.equal(stats.subscribers, 0);
+            assert.equal(stats.reconnects, 0);
+            assert.equal(stats.messagesAcknowledged, 0);
+            assert.equal(stats.messagesRejected, 0);
+            assert.equal(stats.messagesRejectedWithRetry, 0);
+            done();
+        });
+
+    });
+
 });

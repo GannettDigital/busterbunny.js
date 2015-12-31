@@ -37,6 +37,7 @@ module.exports = (function() {
 
         self.EVENTS = Object.freeze({
             WARNING_RAISED: 'warning-raised',
+            STATS: 'stats',
             READY: 'ready',
             CONNECTING: 'connecting',
             RECONNECTING: 'reconnecting',
@@ -48,6 +49,15 @@ module.exports = (function() {
             EVENT_ACKED: 'event-acknowledged',
             EVENT_NACKED: 'event-nacked'
         });
+
+        if(config.stats){
+            function emitStats()
+            {
+                self.emit(self.EVENTS.STATS, _stats);
+                setTimeout(emitStats, (config.stats * 1000));
+            }
+            emitStats();
+        }
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
         var _url = format(
@@ -79,7 +89,7 @@ module.exports = (function() {
         };
 
         /**
-         * The callback the defines what to do after an event has been raised on the bus
+         * The callback defines what to do after an event has been raised on the bus
          * @callback BusterBunny~afterRaised
          * @param err - if truthy, then an error occurred, otherwise success can be assumed
          */
