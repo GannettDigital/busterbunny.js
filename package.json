@@ -9,7 +9,7 @@
     "url": "https://github.com/GannettDigital/busterbunny.js.git"
   },
   "dependencies": {
-    "amqplib": "^0.3.2",
+    "amqplib": "^0.4.0",
     "chai": "^3.0.0",
     "ip": "^1.1.0",
     "merge": "^1.2.0",
