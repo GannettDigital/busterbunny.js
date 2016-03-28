@@ -63,7 +63,7 @@ var config = {
         ],
         exchange: 'i.write.2.this1'
     },
-    stats: 10
+    statsInterval: 10
 };
 
 //init buster bunny

@@ -50,11 +50,12 @@ module.exports = (function() {
             EVENT_NACKED: 'event-nacked'
         });
 
-        if(config.stats){
-            function emitStats()
-            {
-                self.emit(self.EVENTS.STATS, _stats);
-                setTimeout(emitStats, (config.stats * 1000));
+        if(config.statsInterval) {
+            function emitStats() {
+                if (self.listenerCount(self.EVENTS.STATS)) {
+                    self.emit(self.EVENTS.STATS, JSON.parse(JSON.stringify(_stats)));
+                    setTimeout(emitStats, (config.statsInterval * 1000));
+                }
             }
             emitStats();
         }

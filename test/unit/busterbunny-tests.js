@@ -710,7 +710,7 @@ describe("busterbunny.js", function() {
         amqpMock.connect = function() {};
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        fakeConfig.stats = 1;
+        fakeConfig.statsInterval = 1;
 
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
