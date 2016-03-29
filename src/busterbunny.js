@@ -37,6 +37,7 @@ module.exports = (function() {
 
         self.EVENTS = Object.freeze({
             WARNING_RAISED: 'warning-raised',
+            STATS: 'stats',
             READY: 'ready',
             CONNECTING: 'connecting',
             RECONNECTING: 'reconnecting',
@@ -48,6 +49,17 @@ module.exports = (function() {
             EVENT_ACKED: 'event-acknowledged',
             EVENT_NACKED: 'event-nacked'
         });
+
+        if(config.statsInterval) {
+            function emitStats() {
+                var eventListeners = EventEmitter.listenerCount(self,self.EVENTS.STATS);
+                if (eventListeners) {
+                    self.emit(self.EVENTS.STATS, deepCopy(_stats));
+                }
+                setTimeout(emitStats, (config.statsInterval * 1000));
+            }
+            emitStats();
+        }
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
         var _url = format(
@@ -79,7 +91,7 @@ module.exports = (function() {
         };
 
         /**
-         * The callback the defines what to do after an event has been raised on the bus
+         * The callback defines what to do after an event has been raised on the bus
          * @callback BusterBunny~afterRaised
          * @param err - if truthy, then an error occurred, otherwise success can be assumed
          */
@@ -138,6 +150,10 @@ module.exports = (function() {
                 self.emit(self.EVENTS.WARNING_RAISED, _eventSubscribers.length + ' consumers is greater than or equal to max of ' + _thresholds.maxConsumers);
             }
         };
+
+        function deepCopy(stats){
+            return JSON.parse(JSON.stringify(stats));
+        }
 
         function buildClientProperties(){
             var properties = {};
