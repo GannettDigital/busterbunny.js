@@ -54,7 +54,7 @@ module.exports = (function() {
             function emitStats() {
                 var eventListeners = EventEmitter.listenerCount(self,self.EVENTS.STATS);
                 if (eventListeners) {
-                    self.emit(self.EVENTS.STATS, JSON.parse(JSON.stringify(_stats)));
+                    self.emit(self.EVENTS.STATS, deepCopy(_stats));
                 }
                 setTimeout(emitStats, (config.statsInterval * 1000));
             }
@@ -150,6 +150,10 @@ module.exports = (function() {
                 self.emit(self.EVENTS.WARNING_RAISED, _eventSubscribers.length + ' consumers is greater than or equal to max of ' + _thresholds.maxConsumers);
             }
         };
+
+        function deepCopy(stats){
+            return JSON.parse(JSON.stringify(stats));
+        }
 
         function buildClientProperties(){
             var properties = {};

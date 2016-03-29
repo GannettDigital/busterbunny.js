@@ -129,7 +129,7 @@ The current list of events (the property names) are ...
 
 0. ```WARNING_RAISED``` when a warning (like when a threshold is reached) has been reached
 	* Parameters: `warningMessage`
-0. ```STATS``` when config.stats is provided busterbunny statistics are emitted at the specified interval of seconds
+0. ```STATS``` when config.statsInterval is provided, busterbunny statistics are emitted at the specified interval of seconds
 	* Parameters: `stats`
 0. ```READY``` when buster bunny has successfully established or re-established a connection and channels are available
 	* No Parameters
