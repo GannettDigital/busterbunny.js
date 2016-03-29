@@ -1,6 +1,25 @@
+var mockery = require('mockery');
+var assert = require('assert');
+var chai = require('chai');
+var expect = chai.expect;
+
 describe("busterbunny.js", function() {
-    var mockery = require('mockery');
-    var assert = require('assert');
+
+    before(function() {
+        mockery.enable({
+            useCleanCache: true
+        });
+    });
+
+    beforeEach(function(){
+        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('./mock-amqp.js');
+        mockery.registerAllowable('string-format');
+    });
+
+    afterEach(function() {
+        mockery.deregisterAll();
+    });
 
     var fakeConfig = {
         cluster: {
@@ -21,21 +40,6 @@ describe("busterbunny.js", function() {
         ],
         exchange: 'i.write.2.this1'
     };
-
-    before(function() {
-        mockery.enable({
-            useCleanCache: true,
-            warnOnUnregistered: false
-        });
-    });
-
-    beforeEach(function(){
-        mockery.warnOnUnregistered(false);
-    });
-
-    afterEach(function() {
-        mockery.deregisterAll();
-    });
 
     it('should update the messagesRejectedWithRetry stat when message is rejected with requeue', function(done) {
         var AmqpMock = require('./mock-amqp.js');
@@ -715,13 +719,17 @@ describe("busterbunny.js", function() {
         var BusterBunny = require('../../src/busterbunny.js');
         var bb = new BusterBunny(fakeConfig);
 
+        var expectedStats = {
+            queuedEventsToRaise: 0,
+            subscribers: 0,
+            reconnects: 0,
+            messagesAcknowledged: 0,
+            messagesRejected: 0,
+            messagesRejectedWithRetry: 0
+        }
+
         bb.on(bb.EVENTS.STATS, function(stats) {
-            assert.equal(stats.queuedEventsToRaise, 0);
-            assert.equal(stats.subscribers, 0);
-            assert.equal(stats.reconnects, 0);
-            assert.equal(stats.messagesAcknowledged, 0);
-            assert.equal(stats.messagesRejected, 0);
-            assert.equal(stats.messagesRejectedWithRetry, 0);
+            expect(stats).to.eql(expectedStats);
             done();
         });
 

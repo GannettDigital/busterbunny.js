@@ -1,6 +1,38 @@
+var mockery = require('mockery');
+var assert = require('assert');
+var expect = require('chai').expect;
+var AmqpMock = require('./mock-amqp.js');
+
 describe('busterbunny.js - raiseEvents input validation', function() {
-    var assert = require('assert');
-    var expect = require('chai').expect;
+
+    var amqpMock;
+
+    before(function() {
+        mockery.enable({
+            useCleanCache: true
+        });
+    });
+
+    beforeEach(function(){
+        amqpMock = new AmqpMock();
+
+        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('./mock-amqp.js');
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        mockery.registerAllowable('util');
+        mockery.registerAllowable('string-format');
+        mockery.registerAllowable('events');
+        mockery.registerAllowable('merge');
+
+        mockery.registerMock('buffer', {});
+        mockery.registerMock('os', {hostname: function(){return 'mock-host'}});
+        mockery.registerMock('ip', {address: function(){return '127.0.0.1'}});
+    });
+
+    afterEach(function() {
+        mockery.deregisterAll();
+    });
 
     var fakeConfig = {
         cluster: {

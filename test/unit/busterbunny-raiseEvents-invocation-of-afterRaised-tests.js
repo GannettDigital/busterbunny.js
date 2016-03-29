@@ -1,13 +1,32 @@
+var assert = require('assert');
+var expect = require('chai').expect;
+var mockery = require('mockery');
+var AmqpMock = require('./mock-amqp.js');
+
 describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', function() {
-    var assert = require('assert');
-    var expect = require('chai').expect;
-    var mockery = require('mockery');
+
+    var amqpMock;
 
     before(function() {
         mockery.enable({
-            useCleanCache: true,
-            warnOnUnregistered: false
+            useCleanCache: true
         });
+    });
+
+    beforeEach(function(){
+        amqpMock = new AmqpMock();
+
+        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('./mock-amqp.js');
+
+        mockery.registerAllowable('util');
+        mockery.registerAllowable('string-format');
+        mockery.registerAllowable('events');
+        mockery.registerAllowable('merge');
+
+        mockery.registerMock('buffer', {});
+        mockery.registerMock('os', {hostname: function(){return 'mock-host'}});
+        mockery.registerMock('ip', {address: function(){return '127.0.0.1'}});
     });
 
     afterEach(function() {

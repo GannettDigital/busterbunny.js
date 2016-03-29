@@ -52,10 +52,11 @@ module.exports = (function() {
 
         if(config.statsInterval) {
             function emitStats() {
-                if (self.listenerCount(self.EVENTS.STATS)) {
+                var eventListeners = EventEmitter.listenerCount(self,self.EVENTS.STATS);
+                if (eventListeners) {
                     self.emit(self.EVENTS.STATS, JSON.parse(JSON.stringify(_stats)));
-                    setTimeout(emitStats, (config.statsInterval * 1000));
                 }
+                setTimeout(emitStats, (config.statsInterval * 1000));
             }
             emitStats();
         }
