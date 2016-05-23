@@ -27,4 +27,4 @@ build/Release
 node_modules
 
 .idea
-local.js
+config/local.js

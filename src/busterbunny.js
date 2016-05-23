@@ -85,7 +85,7 @@ module.exports = (function() {
         };
 
         self.disconnect = function() {
-            _disconnect();
+            if (!_disconnecting) _disconnect();
         };
 
         self.encoder = {
@@ -321,8 +321,10 @@ module.exports = (function() {
 
         self.on(self.EVENTS.DISCONNECTING, function() {
             try{
-                if(_connection && _connected)
+                if(_connection && _connected){
                     _connection.close(function(){});
+                    _connected = false;
+                }
             }
             catch(err)
             {

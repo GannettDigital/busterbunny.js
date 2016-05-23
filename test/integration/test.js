@@ -4,7 +4,7 @@ var config = require('./config/local.js');
 describe('busterbunny', function(){
     this.timeout(10000);
 
-    it.only('should send and receive messages and allow the connection to be closed', function(done){
+    it('should send and receive messages and allow the connection to be closed', function(done){
         var busterBunny = new BusterBunny(config.amqp);
         var onEventAcked = function(){
             busterBunny.disconnect();
@@ -23,17 +23,14 @@ describe('busterbunny', function(){
         });
     });
 
-    it('should gracefully handle a disconnect on a closed connection', function(done){
+    it('should gracefully handle a disconnect if disconnect is called twice', function(done){
         var calledCount = 0;
         var busterBunny = new BusterBunny(config.amqp);
         function onDisconnected(){
-
             calledCount += 1;
             console.log(calledCount);
-            if (calledCount === 1)
-                busterBunny.disconnect();
-            if (calledCount === 2)
-                done();
+            busterBunny.disconnect();
+            done();
         }
         busterBunny.on(busterBunny.EVENTS.DISCONNECTED, onDisconnected);
         busterBunny.on(busterBunny.EVENTS.CONNECTED, function(){
