@@ -19,7 +19,8 @@ module.exports = (function() {
         var _eventSubscribers = [];
         var _publishingChannel;
         var _clientProperties = buildClientProperties();
-
+        var _disconnecting = false;
+        var _statsTimeoutId;
         var _stats = {
             queuedEventsToRaise: 0,
             subscribers: 0,
@@ -42,6 +43,8 @@ module.exports = (function() {
             CONNECTING: 'connecting',
             RECONNECTING: 'reconnecting',
             CONNECTED: 'connected',
+            DISCONNECTING: 'disconnecting',
+            DISCONNECTED: 'disconnected',
             AMQP_ERROR: 'amqp-error',
             PUBLISH_CHANNEL_ESTABLISHED: 'publish-channel-established',
             PUBLISH_REQUESTED: 'publish-requested',
@@ -50,16 +53,17 @@ module.exports = (function() {
             EVENT_NACKED: 'event-nacked'
         });
 
-        if(config.statsInterval) {
-            function emitStats() {
-                var eventListeners = EventEmitter.listenerCount(self,self.EVENTS.STATS);
+        self.emitStats = function() {
+            if (config.statsInterval) {
+                var eventListeners = EventEmitter.listenerCount(self, self.EVENTS.STATS);
                 if (eventListeners) {
                     self.emit(self.EVENTS.STATS, deepCopy(_stats));
                 }
-                setTimeout(emitStats, (config.statsInterval * 1000));
+                _statsTimeoutId = setTimeout(self.emitStats, (config.statsInterval * 1000));
             }
-            emitStats();
-        }
+        };
+
+        self.emitStats();
 
         // Url format: amqp://{username}:{password}@{hostname}:{port}/{vhost}?heartbeat={heartbeat}
         var _url = format(
@@ -78,6 +82,10 @@ module.exports = (function() {
         
         self.getUrl = function() {
             return _url;
+        };
+
+        self.disconnect = function() {
+            _disconnect();
         };
 
         self.encoder = {
@@ -201,7 +209,8 @@ module.exports = (function() {
         function connect() {
             _amqp.connect(_url, { clientProperties: _clientProperties }, function(err, conn) {
                 if(err) {
-                    self.emit(self.EVENTS.RECONNECTING);
+                    if (!_disconnecting)
+                        self.emit(self.EVENTS.RECONNECTING);
                 } else {
                     self.emit(self.EVENTS.CONNECTING, conn);
                 }
@@ -211,6 +220,11 @@ module.exports = (function() {
         function reconnect() {
             connect();
             _stats.reconnects++;
+        }
+
+        function _disconnect() {
+            _disconnecting = true;
+            self.emit(self.EVENTS.DISCONNECTING);
         }
 
         function createPublisherChannel() {
@@ -303,6 +317,22 @@ module.exports = (function() {
             }
 
             self.emit(self.EVENTS.READY);
+        });
+
+        self.on(self.EVENTS.DISCONNECTING, function() {
+            try{
+                if(_connection && _connected)
+                    _connection.close(function(){});
+            }
+            catch(err)
+            {
+                _connected = false;
+            }
+            finally
+            {
+                self.emitStats();
+                self.emit(self.EVENTS.DISCONNECTED);
+            }
         });
 
         self.on(self.EVENTS.PUBLISH_CHANNEL_ESTABLISHED, publishQueuedRequestsRecursively);

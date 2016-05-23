@@ -1,3 +1,5 @@
+var sinon = require('sinon');
+
 module.exports = (function() {
     var util = require('util');
     var EventEmitter = require('events').EventEmitter;
@@ -5,7 +7,8 @@ module.exports = (function() {
     function AmqpMock() {
         var mock = this;
         mock.connection = new EventEmitter();
-        mock.connection.createChannel = function() {};
+        mock.connection.createChannel = sinon.spy();
+        mock.connection.close = sinon.spy();
 
         mock.connect = function(url, options, connectionCallback) {
             connectionCallback(null, mock.connection);

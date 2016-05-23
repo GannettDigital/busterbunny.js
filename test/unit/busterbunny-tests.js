@@ -2,6 +2,7 @@ var mockery = require('mockery');
 var assert = require('assert');
 var chai = require('chai');
 var expect = chai.expect;
+var sinon = require('sinon');
 
 describe("busterbunny.js", function() {
 
@@ -436,6 +437,55 @@ describe("busterbunny.js", function() {
         amqpMock.causeConnectionError();
     });
 
+    it('should emit on disconnect', function(done){
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.on('disconnecting', function() {
+            assert.ok(true);
+            done();
+        });
+
+        bb.disconnect();
+    });
+
+    it('should flush stats on disconnect', function(done){
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+        bb.emitStats = sinon.spy();
+        bb.on('disconnecting', function() {
+            expect(bb.emitStats.calledOnce).to.equal(true);
+            done();
+        });
+
+        bb.disconnect();
+    });
+
+    it('should call amqplib close method on disconnect', function(done){
+        var AmqpMock = require('./mock-amqp.js');
+        var amqpMock = new AmqpMock();
+
+        mockery.registerMock('amqplib/callback_api', amqpMock);
+
+        var BusterBunny = require('../../src/busterbunny.js');
+        var bb = new BusterBunny(fakeConfig);
+
+        bb.on('disconnecting', function() {
+            expect(amqpMock.connection.close.calledOnce).to.equal(true);
+            done();
+        });
+
+        bb.disconnect();
+    });
+
     it('should raiseEvents on open connection', function(done) {
         var AmqpMock = require('./mock-amqp.js');
         var amqpMock = new AmqpMock();
@@ -726,7 +776,7 @@ describe("busterbunny.js", function() {
             messagesAcknowledged: 0,
             messagesRejected: 0,
             messagesRejectedWithRetry: 0
-        }
+        };
 
         bb.on(bb.EVENTS.STATS, function(stats) {
             expect(stats).to.eql(expectedStats);
