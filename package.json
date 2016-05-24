@@ -1,6 +1,6 @@
 {
   "name": "busterbunny",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Opinionated EventBus Library for amqplib",
   "license": "MIT",
   "main": "src/busterbunny.js",
@@ -23,7 +23,7 @@
     "sinon": "^1.17.2"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --recursive test/unit",
     "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
     "coveralls": "npm run cover && ./node_modules/coveralls/bin/coveralls.js < coverage/lcov.info"
   }

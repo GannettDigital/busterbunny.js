@@ -139,6 +139,10 @@ The current list of events (the property names) are ...
 	* No Parameters 
 0. ```CONNECTED``` after a connection has been established
 	* No Parameters
+0. ```DISCONNECTING``` when buster bunny is disconnecting its connection
+	* No Parameters 
+0. ```DISCONNECTED``` after a disconnection has been completed and stats have been flushed
+	* No Parameters
 0. ```AMQP_ERROR``` when the amqplib throws an error
 	* Parameters: `error` 
 0. ```PUBLISH_CHANNEL_ESTABLISHED``` when buster bunny is ready to publish events to an exchange
