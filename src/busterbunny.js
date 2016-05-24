@@ -322,18 +322,16 @@ module.exports = (function() {
         self.on(self.EVENTS.DISCONNECTING, function() {
             try{
                 if(_connection && _connected){
-                    _connection.close(function(){});
+                    _connection.close(function(){
+                        self.emitStats();
+                        self.emit(self.EVENTS.DISCONNECTED);
+                    });
                     _connected = false;
                 }
             }
             catch(err)
             {
                 _connected = false;
-            }
-            finally
-            {
-                self.emitStats();
-                self.emit(self.EVENTS.DISCONNECTED);
             }
         });
 

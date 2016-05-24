@@ -8,7 +8,7 @@ module.exports = (function() {
         var mock = this;
         mock.connection = new EventEmitter();
         mock.connection.createChannel = sinon.spy();
-        mock.connection.close = sinon.spy();
+        mock.connection.close = sinon.stub().callsArgWith(0);
 
         mock.connect = function(url, options, connectionCallback) {
             connectionCallback(null, mock.connection);
