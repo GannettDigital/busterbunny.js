@@ -85,7 +85,10 @@ module.exports = (function() {
         };
 
         self.disconnect = function() {
-            if (!_disconnecting) _disconnect();
+            if (!_disconnecting) {
+                _disconnecting = true;
+                self.emit(self.EVENTS.DISCONNECTING);
+            };
         };
 
         self.encoder = {
@@ -220,11 +223,6 @@ module.exports = (function() {
         function reconnect() {
             connect();
             _stats.reconnects++;
-        }
-
-        function _disconnect() {
-            _disconnecting = true;
-            self.emit(self.EVENTS.DISCONNECTING);
         }
 
         function createPublisherChannel() {
