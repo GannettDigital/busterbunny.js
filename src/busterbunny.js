@@ -200,13 +200,13 @@ module.exports = (function() {
             try {
                 _publishingChannel.publish.apply(_publishingChannel, args);
                 _stats.queuedEventsToRaise--;
-                afterRaised();
+                process.nextTick(afterRaised);
             } catch(err) {
                 var eventId = args[1];
                 var error = new Error('Event ' + eventId + ' failed to publish due to error: ' + err);
-                afterRaised(error);
+                process.nextTick(afterRaised.bind(null, error));
             }
-            publishQueuedRequestsRecursively();
+            process.nextTick(publishQueuedRequestsRecursively);
         }
 
         function connect() {
