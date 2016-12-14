@@ -24,7 +24,7 @@
   },
   "scripts": {
     "test": "mocha --recursive test/unit",
-    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --include-all-sources --report lcovonly -- -R spec test/unit --recursive",
     "coveralls": "npm run cover && ./node_modules/coveralls/bin/coveralls.js < coverage/lcov.info"
   }
 }
