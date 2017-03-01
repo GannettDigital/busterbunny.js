@@ -1,8 +1,8 @@
-# busterbunny.js
+# deprecated.js
 
 Opinionated EventBus Library for amqplib
 
-[![npm](https://img.shields.io/npm/v/busterbunny.svg)](https://www.npmjs.com/package/busterbunny) [![Coverage Status](https://coveralls.io/repos/GannettDigital/busterbunny.js/badge.svg)](https://coveralls.io/r/GannettDigital/busterbunny.js) [![Build Status](https://travis-ci.org/GannettDigital/busterbunny.js.svg?branch=master)](https://travis-ci.org/GannettDigital/busterbunny.js)
+[![npm](https://img.shields.io/npm/v/busterbunny.svg)](https://www.npmjs.com/package/busterbunny) [![Coverage Status](https://coveralls.io/repos/GannettDigital/deprecated.js/badge.svg)](https://coveralls.io/r/GannettDigital/deprecated.js) [![Build Status](https://travis-ci.org/GannettDigital/deprecated.js.svg?branch=master)](https://travis-ci.org/GannettDigital/deprecated.js)
 
 
 

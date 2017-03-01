@@ -2,7 +2,7 @@ var mockery = require('mockery');
 var assert = require('assert');
 var sinon = require('sinon');
 
-describe('busterbunny.js - amqp connect callback', function() {
+describe('deprecated.js - amqp connect callback', function() {
 
     before(function() {
         mockery.enable({
@@ -15,7 +15,7 @@ describe('busterbunny.js - amqp connect callback', function() {
         mockery.registerMock('os', {hostname: function(){return 'mock-host'}});
         mockery.registerMock('ip', {address: function(){return '127.0.0.1'}});
 
-        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('../../lib/deprecated.js');
         mockery.registerAllowable('./mock-amqp.js');
         mockery.registerAllowable('util');
         mockery.registerAllowable('string-format');
@@ -63,7 +63,7 @@ describe('busterbunny.js - amqp connect callback', function() {
         fakeConfig.thresholds = {maxConsumers: 2};
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
 
         var bb = new BusterBunny(fakeConfig);
         bb.removeAllListeners(bb.EVENTS.RECONNECTING);
@@ -90,7 +90,7 @@ describe('busterbunny.js - amqp connect callback', function() {
         fakeConfig.thresholds = {maxConsumers: 2};
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
 
         var bb = new BusterBunny(fakeConfig);
         bb.removeAllListeners(bb.EVENTS.RECONNECTING);
@@ -117,7 +117,7 @@ describe('busterbunny.js - amqp connect callback', function() {
         fakeConfig.thresholds = {maxConsumers: 2};
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
 
         var bb = new BusterBunny(fakeConfig);
         bb.removeAllListeners(bb.EVENTS.RECONNECTING);
@@ -153,7 +153,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
     });
 
@@ -167,7 +167,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
     });
 
@@ -183,7 +183,7 @@ describe('busterbunny.js - amqp connect callback', function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
     });
 
@@ -200,7 +200,7 @@ describe('busterbunny.js - amqp connect callback', function() {
         fakeConfig.thresholds = {maxConsumers: 2};
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
 
         var bb = new BusterBunny(fakeConfig);
         bb.removeAllListeners(bb.EVENTS.RECONNECTING);

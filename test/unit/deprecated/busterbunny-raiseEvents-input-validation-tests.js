@@ -3,7 +3,7 @@ var assert = require('assert');
 var expect = require('chai').expect;
 var AmqpMock = require('./mock-amqp.js');
 
-describe('busterbunny.js - raiseEvents input validation', function() {
+describe('deprecated.js - raiseEvents input validation', function() {
 
     var amqpMock;
 
@@ -16,7 +16,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     beforeEach(function(){
         amqpMock = new AmqpMock();
 
-        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('../../lib/deprecated.js');
         mockery.registerAllowable('./mock-amqp.js');
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
@@ -55,7 +55,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     };
 
     it('should throw an Error with an appropriate message when raiseEvents is called and both options and afterRaised are not specified', function() {
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         function doIt() {
@@ -66,7 +66,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     });
 
     it('should throw an Error with an appropriate message when raiseEvents is called and options is not a function and afterRaised is not specified', function() {
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         function doIt() {
@@ -77,7 +77,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     });
 
     it('should throw an Error with an appropriate message when raiseEvents is called and afterRaised is not a function', function() {
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         function doIt() {
@@ -88,7 +88,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     });
 
     it('should invoke afterRaised with an Error with an appropriate message when eventId is not a string', function(done) {
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         function afterRaised(err) {
@@ -102,7 +102,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     });
 
     it('should invoke afterRaised with an Error with an appropriate message when eventId is null', function(done) {
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         function afterRaised(err) {
@@ -116,7 +116,7 @@ describe('busterbunny.js - raiseEvents input validation', function() {
     });
 
     it('should throw an Error with an appropriate message when raiseEvents is called with options a non-object and afterRaised defined', function() {
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         function doIt() {

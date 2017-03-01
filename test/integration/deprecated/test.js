@@ -1,5 +1,5 @@
-var BusterBunny = require('../../src/busterbunny.js');
-var config = require('./config/local.js');
+var BusterBunny = require('../../../lib/deprecated.js');
+var config = require('./config/local-example.js');
 
 describe('busterbunny', function(){
     this.timeout(10000);

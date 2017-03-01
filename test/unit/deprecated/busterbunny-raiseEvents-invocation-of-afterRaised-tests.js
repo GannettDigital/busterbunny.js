@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var mockery = require('mockery');
 var AmqpMock = require('./mock-amqp.js');
 
-describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', function() {
+describe('deprecated.js - raiseEvents invocation of the afterRaised callback', function() {
 
     var amqpMock;
 
@@ -16,7 +16,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
     beforeEach(function(){
         amqpMock = new AmqpMock();
 
-        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('../../lib/deprecated.js');
         mockery.registerAllowable('./mock-amqp.js');
 
         mockery.registerAllowable('util');
@@ -80,7 +80,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var busterBunny = new BusterBunny(fakeConfig);
 
         busterBunny.raiseEvents(eventId, event, options, afterRaised);
@@ -113,7 +113,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var busterBunny = new BusterBunny(fakeConfig);
 
         busterBunny.raiseEvents(eventId, event, options, afterRaised);
@@ -152,7 +152,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var busterBunny = new BusterBunny(fakeConfig);
 
         busterBunny.raiseEvents(eventId, event, options, afterRaised);
@@ -191,7 +191,7 @@ describe('busterbunny.js - raiseEvents invocation of the afterRaised callback', 
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var busterBunny = new BusterBunny(fakeConfig);
 
         busterBunny.raiseEvents(eventId, event, options, afterRaised);

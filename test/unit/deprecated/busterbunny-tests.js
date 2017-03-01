@@ -4,7 +4,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
 
-describe("busterbunny.js", function() {
+describe("deprecated.js", function() {
 
     before(function() {
         mockery.enable({
@@ -13,7 +13,7 @@ describe("busterbunny.js", function() {
     });
 
     beforeEach(function(){
-        mockery.registerAllowable('../../src/busterbunny.js');
+        mockery.registerAllowable('../../lib/deprecated.js');
         mockery.registerAllowable('./mock-amqp.js');
         mockery.registerAllowable('string-format');
     });
@@ -73,7 +73,7 @@ describe("busterbunny.js", function() {
         ];
 
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         assert.equal(bb.getStats().messagesRejectedWithRetry, 0);
@@ -116,7 +116,7 @@ describe("busterbunny.js", function() {
         ];
 
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         assert.equal(bb.getStats().messagesRejected, 0);
@@ -174,7 +174,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.subscribe(function(event, messageObj) {
@@ -227,7 +227,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.subscribe(function(event, messageObj) {
@@ -266,7 +266,7 @@ describe("busterbunny.js", function() {
         ];
 
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         assert.equal(bb.getStats().messagesAcknowledged, 0);
@@ -309,7 +309,7 @@ describe("busterbunny.js", function() {
         ];
 
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on(bb.EVENTS.EVENT_ACKED, function(event, message, timestamp){
@@ -355,7 +355,7 @@ describe("busterbunny.js", function() {
             }
         ];
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on(bb.EVENTS.EVENT_NACKED, function(event, message, requeue, timestamp) {
@@ -403,7 +403,7 @@ describe("busterbunny.js", function() {
             }
         ];
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on(bb.EVENTS.EVENT_NACKED, function(event, message, requeue, timestamp) {
@@ -425,7 +425,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
 
         var bb = new BusterBunny(fakeConfig);
 
@@ -442,7 +442,7 @@ describe("busterbunny.js", function() {
         var amqpMock = new AmqpMock();
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on('disconnecting', function() {
@@ -458,7 +458,7 @@ describe("busterbunny.js", function() {
         var amqpMock = new AmqpMock();
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
         bb.emitStats = sinon.spy();
         bb.on('disconnecting', function() {
@@ -475,7 +475,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on('disconnecting', function() {
@@ -503,7 +503,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.raiseEvents('eventId', {}, {}, function() {});
@@ -526,7 +526,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.raiseEvents('eventId', {}, function() {});
@@ -547,7 +547,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.raiseEvents('eventId', {}, {}, function(err) {
@@ -576,7 +576,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.raiseEvents('eventId', {}, {}, function(err) {
@@ -595,7 +595,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.subscribe(function() {
@@ -636,7 +636,7 @@ describe("busterbunny.js", function() {
         ];
 
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.subscribe(function () {
@@ -675,7 +675,7 @@ describe("busterbunny.js", function() {
         ];
 
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.subscribe(function(event, messageObj) {
@@ -694,7 +694,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         var expectedUrl = format(
@@ -722,7 +722,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on(bb.EVENTS.WARNING_RAISED, function(msg) {
@@ -745,7 +745,7 @@ describe("busterbunny.js", function() {
 
         mockery.registerMock('amqplib/callback_api', amqpMock);
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         bb.on(bb.EVENTS.WARNING_RAISED, function(msg) {
@@ -766,7 +766,7 @@ describe("busterbunny.js", function() {
 
         fakeConfig.statsInterval = 1;
 
-        var BusterBunny = require('../../src/busterbunny.js');
+        var BusterBunny = require('.././deprecated.js');
         var bb = new BusterBunny(fakeConfig);
 
         var expectedStats = {
